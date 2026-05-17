@@ -1,8 +1,16 @@
 <x-layouts.app title="Booking Confirmed — TicketFlix">
+@php
+    $seatsParam = request()->query('seats', 'G7,G8,G9');
+    $formattedSeats = str_replace(',', ', ', $seatsParam);
+    $email = request()->query('email');
+    if (!$email) {
+        $email = auth()->check() ? auth()->user()->email : 'your-email@example.com';
+    }
+@endphp
     <div class="confirm-wrapper">
         <div class="success-icon-circle">✓</div>
         <h1 style="font-size: 32px; font-weight: 700; letter-spacing: 1px;">BOOKING CONFIRMED!</h1>
-        <p style="color: var(--muted); margin-top: 8px;">Your tickets have been sent to <strong>arjun@email.com</strong></p>
+        <p style="color: var(--muted); margin-top: 8px;">Your tickets have been sent to <strong>{{ $email }}</strong></p>
 
         <div class="ticket-card">
             <div class="ticket-top">
@@ -28,7 +36,7 @@
                 </div>
                 <div>
                     <div class="ticket-label">Seats</div>
-                    <div class="ticket-value" style="color: var(--red);">G7, G8, G9</div>
+                    <div class="ticket-value" style="color: var(--red);">{{ $formattedSeats }}</div>
                 </div>
                 <div>
                     <div class="ticket-label">Order ID</div>

@@ -140,50 +140,57 @@
     <section class="container" style="padding-top: 80px; padding-bottom: 80px;">
         <div class="section-header" style="margin-bottom: 48px;">
             <div class="section-title" style="font-size: 40px; letter-spacing: 2px;">UPCOMING <span>EVENTS</span></div>
-            <button class="btn btn-ghost btn-sm" style="border-radius: 100px; padding: 8px 20px; font-size: 13px;">See All ➔</button>
+            <a href="{{ route('events.index') }}" class="btn btn-ghost btn-sm" style="border-radius: 100px; padding: 8px 20px; font-size: 13px; text-decoration: none;">See All ➔</a>
         </div>
         <div class="grid" style="grid-template-columns: repeat(3, 1fr); gap: 40px;">
             <div class="event-card-v" style="background: var(--surface2); border-radius: 28px; border: 1px solid var(--border); overflow: hidden; transition: var(--transition); cursor: pointer;" onmouseover="this.style.borderColor='var(--border2)'" onmouseout="this.style.borderColor='var(--border)'">
-                <div class="poster-1" style="height: 220px; display: flex; align-items: center; justify-content: center; font-size: 80px;">🎵</div>
+                <div style="height: 220px; position: relative; overflow: hidden;">
+                    <img src="{{ asset('assets/images/movies/event1b.jpg') }}" alt="TOXIC - Abhishek Upmanyu Live" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
                 <div style="padding: 32px;">
-                    <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 16px;">Resonance Music Festival 2025</h3>
+                    <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 16px;">TOXIC - Abhishek Upmanyu Live</h3>
                     <div style="font-size: 14px; color: var(--muted); display: flex; flex-direction: column; gap: 10px;">
-                        <div style="display: flex; align-items: center; gap: 10px;">📅 28 Apr - 30 Apr, 2025</div>
-                        <div style="display: flex; align-items: center; gap: 10px;">📍 MMRDA Grounds, Mumbai</div>
-                        <div style="display: flex; align-items: center; gap: 10px;">👥 15 Artists · 3 Stages</div>
+                        <div style="display: flex; align-items: center; gap: 10px;">📅 Sun, 5 Apr onwards</div>
+                        <div style="display: flex; align-items: center; gap: 10px;">📍 The Laugh Store: DLF Mall of India</div>
+                        <div style="display: flex; align-items: center; gap: 10px;">🎙 Stand up Comedy</div>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 32px;">
-                        <div style="font-weight: 700; font-size: 22px; color: var(--white);">₹ 2,499 <small style="font-weight: 400; color: var(--muted); font-size: 12px;">onwards</small></div>
+                        <div style="font-weight: 700; font-size: 22px; color: var(--white);">₹ 1,499 <small style="font-weight: 400; color: var(--muted); font-size: 12px;">onwards</small></div>
                         <button class="btn btn-primary" style="border-radius: 100px; padding: 12px 28px; font-weight: 700;">Get Tickets</button>
                     </div>
                 </div>
             </div>
             <div class="event-card-v" style="background: var(--surface2); border-radius: 28px; border: 1px solid var(--border); overflow: hidden; transition: var(--transition); cursor: pointer;" onmouseover="this.style.borderColor='var(--border2)'" onmouseout="this.style.borderColor='var(--border)'">
-                <div class="poster-3" style="height: 220px; display: flex; align-items: center; justify-content: center; font-size: 80px;">⚽</div>
+                <div style="height: 220px; position: relative; overflow: hidden;">
+                    <img src="{{ asset('assets/images/movies/event2.jpg') }}" alt="IPL 2026: Grand Finale" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
                 <div style="padding: 32px;">
-                    <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 16px;">IPL 2025: MI vs RCB Grand Final</h3>
+                    <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 16px;">IPL 2026: Grand Finale</h3>
                     <div style="font-size: 14px; color: var(--muted); display: flex; flex-direction: column; gap: 10px;">
-                        <div style="display: flex; align-items: center; gap: 10px;">📅 5 May 2025, 7:30 PM</div>
+                        <div style="display: flex; align-items: center; gap: 10px;">📅 Sun, 31 May 2026, 7:30 PM</div>
                         <div style="display: flex; align-items: center; gap: 10px;">📍 Wankhede Stadium, Mumbai</div>
-                        <div style="display: flex; align-items: center; gap: 10px;">🏟 Capacity: 32,000</div>
+                        <div style="display: flex; align-items: center; gap: 10px;">🏟 Sports · TATA IPL</div>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 32px;">
-                        <div style="font-weight: 700; font-size: 22px; color: var(--white);">₹ 800 <small style="font-weight: 400; color: var(--muted); font-size: 12px;">onwards</small></div>
+                        <div style="font-weight: 700; font-size: 22px; color: var(--white);">₹ 1,500 <small style="font-weight: 400; color: var(--muted); font-size: 12px;">onwards</small></div>
                         <button class="btn btn-primary" style="border-radius: 100px; padding: 12px 28px; font-weight: 700;">Get Tickets</button>
                     </div>
                 </div>
             </div>
             <div class="event-card-v" style="background: var(--surface2); border-radius: 28px; border: 1px solid var(--border); overflow: hidden; transition: var(--transition); cursor: pointer;" onmouseover="this.style.borderColor='var(--border2)'" onmouseout="this.style.borderColor='var(--border)'">
-                <div class="poster-4" style="height: 220px; display: flex; align-items: center; justify-content: center; font-size: 80px;">🎭</div>
+                <div style="height: 220px; position: relative; overflow: hidden;">
+                    <img src="{{ asset('assets/images/movies/event3.avif') }}" alt="Sunburn Festival 2026" style="width: 100%; height: 100%; object-fit: cover;">
+                    <div style="position: absolute; top: 16px; right: 16px; background: var(--red); color: var(--white); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 6px; letter-spacing: 1px;">PROMOTED</div>
+                </div>
                 <div style="padding: 32px;">
-                    <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 16px;">The Comedy Gala Night — Season 4</h3>
+                    <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 16px;">Sunburn Festival 2026</h3>
                     <div style="font-size: 14px; color: var(--muted); display: flex; flex-direction: column; gap: 10px;">
-                        <div style="display: flex; align-items: center; gap: 10px;">📅 12 May 2025, 8:00 PM</div>
-                        <div style="display: flex; align-items: center; gap: 10px;">📍 NCPA, Mumbai</div>
-                        <div style="display: flex; align-items: center; gap: 10px;">🎙 8 Comedians</div>
+                        <div style="display: flex; align-items: center; gap: 10px;">📅 Fri, 18 Dec onwards</div>
+                        <div style="display: flex; align-items: center; gap: 10px;">📍 Mahalaxmi Race Course, Mumbai</div>
+                        <div style="display: flex; align-items: center; gap: 10px;">🎙 Concerts · Electronic</div>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 32px;">
-                        <div style="font-weight: 700; font-size: 22px; color: var(--white);">₹ 599 <small style="font-weight: 400; color: var(--muted); font-size: 12px;">onwards</small></div>
+                        <div style="font-weight: 700; font-size: 22px; color: var(--white);">₹ 3,000 <small style="font-weight: 400; color: var(--muted); font-size: 12px;">onwards</small></div>
                         <button class="btn btn-primary" style="border-radius: 100px; padding: 12px 28px; font-weight: 700;">Get Tickets</button>
                     </div>
                 </div>
