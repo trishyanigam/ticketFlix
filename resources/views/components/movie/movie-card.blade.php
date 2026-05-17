@@ -7,17 +7,25 @@
     'poster',
     'image' => null,
     'full_title' => null,
-    'formats' => ['2D']
+    'formats' => ['2D'],
+    'languages' => ['Hindi']
 ])
 
-<div class="movie-card" onclick="window.location.href='{{ route('movies.show') }}'" style="border: none; background: #18181c; border-radius: 20px; overflow: hidden; cursor: pointer;">
+<div class="movie-card" onclick="window.location.href='{{ route('movies.show') }}'" 
+     data-formats="{{ implode(' ', $formats) }}"
+     data-genres="{{ strtolower($genre) }}"
+     data-languages="{{ implode(' ', array_map('strtolower', $languages)) }}"
+     data-rating="{{ $rating }}"
+     data-new="{{ in_array($title, ['Bhooth', 'Top', 'Chardikala', 'Raja']) ? 'true' : 'false' }}"
+     data-premiere="{{ in_array($title, ['Dhurandhar', 'Project', 'Raja']) ? 'true' : 'false' }}"
+     style="border: none; background: #18181c; border-radius: 20px; overflow: hidden; cursor: pointer;">
     <div class="movie-poster" style="aspect-ratio: 1/1.4; position: relative;">
         @if($image)
             <img src="{{ asset('assets/images/movies/' . $image) }}" alt="{{ $title }}" style="width: 100%; height: 100%; object-fit: cover;">
         @else
             <div class="movie-poster-img {{ $poster }}" style="font-size: 70px; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">{{ $emoji }}</div>
         @endif
-        <div class="movie-badge-top" style="background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); color: var(--white); font-family: var(--font-body); font-size: 11px; padding: 4px 8px; border-radius: 6px;">{{ in_array($title, ['Blaze', 'Nexus', 'Deep', 'Aakhri', 'Project', 'Pati', 'Michael']) ? 'UA' : (in_array($title, ['Void', 'Roots', 'Surge', 'Petal', 'Krishna']) ? 'U' : 'A') }}</div>
+        <div class="movie-badge-top" style="background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); color: var(--white); font-family: var(--font-body); font-size: 11px; padding: 4px 8px; border-radius: 6px;">{{ in_array($title, ['Blaze', 'Nexus', 'Deep', 'Aakhri', 'Project', 'Pati', 'Michael', 'Top', 'Bhooth', 'Raja']) ? 'UA' : (in_array($title, ['Void', 'Roots', 'Surge', 'Petal', 'Krishna', 'Chardikala']) ? 'U' : 'A') }}</div>
         <div class="movie-overlay" style="background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, transparent 60%); padding: 20px; display: flex; align-items: flex-end; justify-content: center;">
              <div style="font-family: var(--font-display); font-size: 28px; letter-spacing: 2px; color: var(--white);">{{ strtoupper($title) }}</div>
         </div>
