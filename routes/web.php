@@ -30,22 +30,27 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/update', [ProfileController::class, 'update'])
         ->name('profile.update');
 
-    Route::get('/seat-selection', [MovieController::class, 'seats'])
-        ->name('movies.seats');
+    Route::get('/admin', [DashboardController::class, 'index'])
+        ->name('admin.dashboard');
+    Route::post('/admin/action', [DashboardController::class, 'action'])
+        ->name('admin.action');
 
-    Route::get('/event-seats', [EventController::class, 'seats'])
-        ->name('events.seats');
+    Route::middleware([\App\Http\Middleware\RestrictAdmin::class])->group(function () {
+        Route::get('/seat-selection', [MovieController::class, 'seats'])
+            ->name('movies.seats');
 
-    Route::get('/payment', [PaymentController::class, 'checkout'])
-        ->name('payment.checkout');
+        Route::get('/event-seats', [EventController::class, 'seats'])
+            ->name('events.seats');
 
-    Route::get('/success', [PaymentController::class, 'success'])
-        ->name('payment.success');
+        Route::get('/payment', [PaymentController::class, 'checkout'])
+            ->name('payment.checkout');
 
-    Route::get('/failed', [PaymentController::class, 'failed'])
-        ->name('payment.failed');
+        Route::get('/success', [PaymentController::class, 'success'])
+            ->name('payment.success');
+
+        Route::get('/failed', [PaymentController::class, 'failed'])
+            ->name('payment.failed');
+    });
 });
 
-Route::get('/admin', [DashboardController::class, 'index'])
-    ->name('admin.dashboard');
 require __DIR__.'/auth.php';

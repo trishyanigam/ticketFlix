@@ -42,6 +42,21 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
+        // Auto-provision or update fixed Admin user in the database
+        if ($this->input('email') === 'admin@ticketflix.com' && $this->input('password') === 'admin123') {
+            $admin = \App\Models\User::where('email', 'admin@ticketflix.com')->first();
+            if (!$admin) {
+                \App\Models\User::create([
+                    'name' => 'Admin User',
+                    'email' => 'admin@ticketflix.com',
+                    'password' => \Illuminate\Support\Facades\Hash::make('admin123'),
+                ]);
+            } else {
+                $admin->password = \Illuminate\Support\Facades\Hash::make('admin123');
+                $admin->save();
+            }
+        }
+
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
