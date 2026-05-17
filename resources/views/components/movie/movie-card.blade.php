@@ -11,7 +11,7 @@
     'languages' => ['Hindi']
 ])
 
-<div class="movie-card" onclick="window.location.href='{{ route('movies.show') }}'" 
+<div class="movie-card" onclick="window.location.href='{{ route('movies.show') }}?title={{ urlencode($full_title ?? $title) }}&rating={{ urlencode($rating) }}&image={{ urlencode($image ?? '') }}&poster={{ urlencode($poster ?? '') }}&emoji={{ urlencode($emoji ?? '') }}&genre={{ urlencode($genre) }}&duration={{ urlencode($duration) }}&formats={{ urlencode(implode(', ', $formats)) }}&languages={{ urlencode(implode(', ', $languages)) }}'" 
      data-formats="{{ implode(' ', $formats) }}"
      data-genres="{{ strtolower($genre) }}"
      data-languages="{{ implode(' ', array_map('strtolower', $languages)) }}"

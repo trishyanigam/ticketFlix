@@ -15,4 +15,9 @@ class EventController extends Controller
     {
         return view('pages.events.show');
     }
+
+    public function seats()
+    {
+        return view('pages.events.seat-selection');
+    }
 }

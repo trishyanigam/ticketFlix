@@ -1,36 +1,54 @@
-<x-layouts.app title="Dhurandhar 2 — TicketFlix">
+@php
+    $title = request()->query('title', 'Dhurandhar 2');
+    $rating = request()->query('rating', '8.8');
+    $image = request()->query('image', '');
+    $poster = request()->query('poster', 'poster-6');
+    $emoji = request()->query('emoji', '🗡️');
+    $genre = request()->query('genre', 'Action/Thriller');
+    $duration = request()->query('duration', '2h 37m');
+    $formats = request()->query('formats', 'IMAX 2D, 2D');
+    $languages = request()->query('languages', 'Hindi');
+    
+    $queryString = request()->getQueryString();
+    $querySuffix = $queryString ? '?' . $queryString : '';
+@endphp
+<x-layouts.app title="{{ $title }} — TicketFlix">
     <div class="movie-detail-hero">
-        <div class="movie-detail-bg poster-6">🗡️</div>
+        <div class="movie-detail-bg {{ $image ? '' : $poster }}" style="{{ $image ? "background-image: url('".asset('assets/images/movies/'.$image)."');" : '' }}">
+            {{ $image ? '' : $emoji }}
+        </div>
         <div class="movie-detail-gradient"></div>
         <div class="movie-detail-content">
-            <div class="movie-detail-poster poster-6" style="display: flex; align-items: center; justify-content: center; font-size: 80px;">🗡️</div>
+            <div class="movie-detail-poster {{ $image ? '' : $poster }}" style="display: flex; align-items: center; justify-content: center; font-size: 80px; {{ $image ? "background-image: url('".asset('assets/images/movies/'.$image)."'); background-size: cover; background-position: center;" : '' }}">
+                {{ $image ? '' : $emoji }}
+            </div>
             <div class="movie-detail-info">
                 <div class="breadcrumb">
                     <span onclick="window.location.href='{{ route('home') }}'">Home</span>
                     <span class="breadcrumb-sep">/</span>
                     <span onclick="window.location.href='{{ route('movies.index') }}'">Movies</span>
                     <span class="breadcrumb-sep">/</span>
-                    <span class="breadcrumb-current">Dhurandhar 2</span>
+                    <span class="breadcrumb-current">{{ $title }}</span>
                 </div>
-                <h1 class="movie-detail-title">DHURANDHAR 2</h1>
+                <h1 class="movie-detail-title">{{ strtoupper($title) }}</h1>
                 <div class="movie-meta-row">
                     <div class="movie-rating-big">
-                        <div class="rating-circle">8.8</div>
+                        <div class="rating-circle">{{ $rating }}</div>
                         <div>
                             <div class="stars" style="color: var(--gold);">★★★★★</div>
                             <div class="text-muted" style="font-size: 11px;">48.5K Votes</div>
                         </div>
                     </div>
                     <div class="meta-dot">·</div>
-                    <div class="badge badge-muted">Hindi</div>
+                    <div class="badge badge-muted">{{ $languages }}</div>
                     <div class="meta-dot">·</div>
-                    <div class="badge badge-muted">IMAX 2D, 2D</div>
+                    <div class="badge badge-muted">{{ $formats }}</div>
                     <div class="meta-dot">·</div>
-                    <div class="badge badge-muted">2h 37m</div>
+                    <div class="badge badge-muted">{{ $duration }}</div>
                     <div class="meta-dot">·</div>
-                    <div class="badge badge-muted">UA</div>
+                    <div class="badge badge-muted">{{ $genre }}</div>
                 </div>
-                <p class="movie-desc">After the fall of a powerful crime syndicate, a fearless undercover officer returns to stop a deadly national conspiracy threatening millions. As enemies rise from the shadows, the battle becomes personal.</p>
+                <p class="movie-desc">Experience the cinematic brilliance of {{ $title }}, featuring stunning visuals and a captivating storyline that will keep you on the edge of your seat.</p>
                 <div class="movie-actions">
                     <button class="btn btn-primary btn-lg" onclick="window.location.href='#showtimes'">Book Tickets</button>
                     <button class="btn btn-ghost btn-lg">▶ Watch Trailer</button>
@@ -56,7 +74,7 @@
             </div>
             <div class="show-times">
                 @foreach(['10:00 AM', '01:30 PM', '05:00 PM', '09:15 PM'] as $time)
-                    <div class="show-time-chip {{ $time == '01:30 PM' ? 'fast-filling' : '' }}" onclick="window.location.href='{{ route('movies.seats') }}'">{{ $time }}</div>
+                    <div class="show-time-chip {{ $time == '01:30 PM' ? 'fast-filling' : '' }}" onclick="window.location.href='{{ route('movies.seats') }}{{ $querySuffix }}'">{{ $time }}</div>
                 @endforeach
             </div>
         </div>
@@ -68,7 +86,7 @@
             </div>
             <div class="show-times">
                 @foreach(['10:30 AM', '02:00 PM', '06:15 PM', '10:30 PM'] as $time)
-                    <div class="show-time-chip" onclick="window.location.href='{{ route('movies.seats') }}'">{{ $time }}</div>
+                    <div class="show-time-chip" onclick="window.location.href='{{ route('movies.seats') }}{{ $querySuffix }}'">{{ $time }}</div>
                 @endforeach
             </div>
         </div>
@@ -80,7 +98,7 @@
             </div>
             <div class="show-times">
                 @foreach(['11:15 AM', '03:45 PM', '07:30 PM', '11:00 PM'] as $time)
-                    <div class="show-time-chip" onclick="window.location.href='{{ route('movies.seats') }}'">{{ $time }}</div>
+                    <div class="show-time-chip" onclick="window.location.href='{{ route('movies.seats') }}{{ $querySuffix }}'">{{ $time }}</div>
                 @endforeach
             </div>
         </div>

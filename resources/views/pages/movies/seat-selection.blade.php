@@ -1,3 +1,11 @@
+@php
+    $title = request()->query('title', 'Dhurandhar 2');
+    $formats = request()->query('formats', 'IMAX');
+    
+    // Pass query string forward
+    $queryString = request()->getQueryString();
+    $querySuffix = $queryString ? '&' . $queryString : '';
+@endphp
 <x-layouts.app title="Select Seats — TicketFlix">
     <div class="movies-page-header" style="padding-bottom: 32px; padding-top: 40px;">
         <div class="container">
@@ -6,7 +14,7 @@
                 <span class="breadcrumb-sep">/</span>
                 <span onclick="window.location.href='{{ route('movies.index') }}'">Movies</span>
                 <span class="breadcrumb-sep">/</span>
-                <span onclick="window.location.href='{{ route('movies.show') }}'">Dhurandhar 2</span>
+                <span onclick="window.location.href='{{ route('movies.show') }}?{!! $queryString !!}'">{{ $title }}</span>
                 <span class="breadcrumb-sep">/</span>
                 <span class="breadcrumb-current">Seat Selection</span>
             </div>
@@ -14,7 +22,7 @@
             <div style="display: flex; align-items: center; justify-content: space-between;">
                 <div>
                     <h1 class="section-title" style="font-size: 36px; letter-spacing: 2px;">SELECT YOUR SEATS</h1>
-                    <div class="text-muted" style="font-size: 14px; margin-top: 4px;">PVR Phoenix Mall | IMAX | Today, 07:15 PM | Dhurandhar 2</div>
+                    <div class="text-muted" style="font-size: 14px; margin-top: 4px;">PVR Phoenix Mall | {{ explode(',', $formats)[0] }} | Today, 07:15 PM | {{ $title }}</div>
                 </div>
                 <div style="text-align: right;">
                     <div style="font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;">Show fills up in</div>
@@ -208,7 +216,7 @@
                 return;
             }
             const seatsStr = selectedSeats.join(',');
-            window.location.href = `{{ route('payment.checkout') }}?seats=${encodeURIComponent(seatsStr)}`;
+            window.location.href = `{{ route('payment.checkout') }}?seats=${encodeURIComponent(seatsStr)}{!! $querySuffix !!}`;
         };
         
         // Initialize booking bar on page load

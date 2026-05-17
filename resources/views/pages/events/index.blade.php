@@ -1,7 +1,7 @@
 <x-layouts.app title="Events — TicketFlix">
     <header class="movies-page-header" style="background: transparent; padding: 100px 0 40px;">
         <div class="container">
-            <h1 style="font-family: var(--font-display); font-size: 48px; letter-spacing: 2px; color: var(--white);">EVENTS <span style="color: var(--red);">IN MUMBAI</span></h1>
+            <h1 style="font-family: var(--font-display); font-size: 48px; letter-spacing: 2px; color: var(--white);">EVENTS <span style="color: var(--red);" id="events-city-title">IN MUMBAI</span></h1>
             <p style="color: var(--muted); font-size: 14px; margin-top: 8px;">5 events happening near you</p>
         </div>
     </header>
@@ -277,8 +277,33 @@
             });
         }
 
+        // Update header location dynamically
+        const savedCity = localStorage.getItem('ticketflix_city') || 'Mumbai';
+        const cityTitle = document.getElementById('events-city-title');
+        if (cityTitle) {
+            cityTitle.textContent = `IN ${savedCity.toUpperCase()}`;
+        }
+
         // Run initial filter to set starting state
         filterEvents();
+        
+        // Handle Event Booking Routing
+        const bookButtons = document.querySelectorAll('.event-card-v .btn-primary');
+        bookButtons.forEach((btn) => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const card = btn.closest('.event-card-v');
+                const title = card.querySelector('h3').textContent;
+                const imageSrc = card.querySelector('img').getAttribute('src');
+                const imageFile = imageSrc.split('/').pop();
+                const category = card.dataset.category;
+                const format = category.charAt(0).toUpperCase() + category.slice(1);
+                const price = card.dataset.price;
+                
+                // Route directly to ticket selection for events
+                window.location.href = `{{ route('events.seats') }}?title=${encodeURIComponent(title)}&image=${imageFile}&formats=${encodeURIComponent(format)}&price=${price}`;
+            });
+        });
     });
     </script>
 </x-layouts.app>

@@ -1,20 +1,38 @@
 <x-layouts.app title="Checkout — TicketFlix">
 @php
-    $seatsParam = request()->query('seats', 'G7,G8,G9');
+    $seatsParam = request()->query('seats', 'G7,G8');
     $selectedSeats = explode(',', $seatsParam);
     $selectedSeatsCount = count($selectedSeats);
     
+    // Movie Variables
+    $title = request()->query('title', 'Dhurandhar 2');
+    $image = request()->query('image', '');
+    $poster = request()->query('poster', 'poster-6');
+    $emoji = request()->query('emoji', '🗡️');
+    $formats = request()->query('formats', 'IMAX 2D');
+    $format = explode(',', $formats)[0];
+    
+    $customPrice = request()->query('price');
+    
+    $queryString = request()->getQueryString();
+    
     $ticketsPrice = 0;
     $ticketGstTotal = 0;
-    foreach ($selectedSeats as $seat) {
-        $row = substr($seat, 0, 1);
-        $price = in_array($row, ['A', 'B']) ? 450 : 250;
-        $ticketsPrice += $price;
-        
-        if ($price <= 100) {
-            $ticketGstTotal += $price * 0.05;
-        } else {
-            $ticketGstTotal += $price * 0.18;
+    
+    if ($customPrice) {
+        $ticketsPrice = (float)$customPrice * $selectedSeatsCount;
+        $ticketGstTotal = $ticketsPrice * 0.18;
+    } else {
+        foreach ($selectedSeats as $seat) {
+            $row = substr($seat, 0, 1);
+            $price = in_array($row, ['A', 'B']) ? 450 : 250;
+            $ticketsPrice += $price;
+            
+            if ($price <= 100) {
+                $ticketGstTotal += $price * 0.05;
+            } else {
+                $ticketGstTotal += $price * 0.18;
+            }
         }
     }
     
@@ -40,7 +58,7 @@
             <span class="breadcrumb-sep">/</span>
             <span onclick="window.location.href='{{ route('movies.index') }}'">Movies</span>
             <span class="breadcrumb-sep">/</span>
-            <span onclick="window.location.href='{{ route('movies.show') }}'">Dhurandhar 2</span>
+            <span onclick="window.location.href='{{ route('movies.show') }}?{!! $queryString !!}'">{{ $title }}</span>
             <span class="breadcrumb-sep">/</span>
             <span class="breadcrumb-current">Payment</span>
         </div>
@@ -151,6 +169,14 @@
                             <img id="upi-qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=trishyanigam@okicici&pn=Trishya%20Nigam&am={{ $totalAmount }}&cu=INR" alt="UPI QR Code" style="border-radius: 8px; border: 4px solid var(--white);">
                         </div>
                         <div style="font-size: 12px; color: var(--muted); margin-bottom: 8px;">Scan QR with any UPI app to pay to Trishya Nigam</div>
+                        
+                        <div id="upi-loader" style="margin-top: 20px; display: none;">
+                            <div style="display: inline-block; width: 24px; height: 24px; border: 3px solid rgba(255,255,255,0.1); border-radius: 50%; border-top-color: var(--gold); animation: spin 1s ease-in-out infinite;"></div>
+                            <div style="font-size: 13px; color: var(--gold); margin-top: 8px;">Awaiting Payment Confirmation...</div>
+                            <style>
+                                @keyframes spin { to { transform: rotate(360deg); } }
+                            </style>
+                        </div>
                     </div>
 
                     <div class="payment-method-item">
@@ -169,10 +195,10 @@
                 <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 24px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted2);">Booking Summary</h3>
                 
                 <div style="display: flex; gap: 16px; margin-bottom: 24px;">
-                    <div class="poster-6" style="width: 60px; height: 90px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0;">🗡️</div>
+                    <div class="{{ $image ? '' : $poster }}" style="width: 60px; height: 90px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; {{ $image ? "background-image: url('".asset('assets/images/movies/'.$image)."'); background-size: cover; background-position: center;" : '' }}">{{ $image ? '' : $emoji }}</div>
                     <div>
-                        <div style="font-weight: 700; font-size: 15px;">Dhurandhar 2</div>
-                        <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">IMAX · Today, 07:15 PM</div>
+                        <div style="font-weight: 700; font-size: 15px;">{{ strtoupper($title) }}</div>
+                        <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">{{ $format }} · Today, 07:15 PM</div>
                         <div style="font-size: 12px; color: var(--muted);">PVR Phoenix Mall</div>
                         <div style="font-size: 12px; color: var(--red); font-weight: 700; margin-top: 4px;">Seats: {{ implode(', ', $selectedSeats) }}</div>
                     </div>
@@ -217,6 +243,7 @@
         
         let appliedCoupon = null;
         let discount = 0.00;
+        let upiTimer = null;
         
         window.selectPaymentMethod = function(method) {
             const cardItem = document.getElementById('pm-card');
@@ -225,6 +252,10 @@
             const upiRadio = document.getElementById('pm-upi-radio');
             const cardDetails = document.getElementById('pm-card-details');
             const upiDetails = document.getElementById('pm-upi-details');
+            
+            // Reset timer
+            if (upiTimer) clearTimeout(upiTimer);
+            document.getElementById('upi-loader').style.display = 'none';
             
             if (method === 'card') {
                 cardItem.classList.add('active');
@@ -240,6 +271,15 @@
                 cardRadio.style.border = '1px solid var(--border)';
                 upiDetails.style.display = 'block';
                 cardDetails.style.display = 'none';
+                
+                // Trigger Mock Webhook Listener
+                document.getElementById('upi-loader').style.display = 'block';
+                upiTimer = setTimeout(() => {
+                    const nameVal = encodeURIComponent(document.getElementById('contact-name').value.trim());
+                    const emailVal = encodeURIComponent(document.getElementById('contact-email').value.trim());
+                    const phoneVal = encodeURIComponent(document.getElementById('contact-phone').value.trim());
+                    window.location.href = `{{ route('payment.success') }}?{!! $queryString !!}&discount=${discount}&coupon=${appliedCoupon || ''}&name=${nameVal}&email=${emailVal}&phone=${phoneVal}`;
+                }, 8000);
             }
         };
         
@@ -347,7 +387,7 @@
                     const emailVal = encodeURIComponent(document.getElementById('contact-email').value.trim());
                     const phoneVal = encodeURIComponent(document.getElementById('contact-phone').value.trim());
                     
-                    window.location.href = `{{ route('payment.success') }}?seats={{ urlencode($seatsParam) }}&discount=${discount}&coupon=${appliedCoupon || ''}&name=${nameVal}&email=${emailVal}&phone=${phoneVal}`;
+                    window.location.href = `{{ route('payment.success') }}?{!! $queryString !!}&discount=${discount}&coupon=${appliedCoupon || ''}&name=${nameVal}&email=${emailVal}&phone=${phoneVal}`;
                 }
             };
             

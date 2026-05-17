@@ -27,8 +27,15 @@ Route::get('/events', [EventController::class, 'index'])
 Route::get('/event-detail', [EventController::class, 'show'])
     ->name('events.show');
 
-Route::get('/profile', [ProfileController::class, 'dashboard'])
-    ->name('profile.dashboard');
+Route::get('/event-seats', [EventController::class, 'seats'])
+    ->name('events.seats');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'dashboard'])
+        ->name('profile.dashboard');
+    Route::post('/profile/update', [ProfileController::class, 'update'])
+        ->name('profile.update');
+});
 
 Route::get('/payment', [PaymentController::class, 'checkout'])
     ->name('payment.checkout');

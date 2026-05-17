@@ -4,23 +4,40 @@
     $formattedSeats = str_replace(',', ', ', $seatsParam);
     $selectedSeats = explode(',', $seatsParam);
     
+    // Movie Variables
+    $title = request()->query('title', 'Dhurandhar 2');
+    $image = request()->query('image', '');
+    $poster = request()->query('poster', 'poster-6');
+    $emoji = request()->query('emoji', '🗡️');
+    $formats = request()->query('formats', 'IMAX 2D');
+    $format = explode(',', $formats)[0];
+    $languages = request()->query('languages', 'Hindi');
+    $language = explode(',', $languages)[0];
+    
     $email = request()->query('email');
     if (!$email) {
         $email = auth()->check() ? auth()->user()->email : 'your-email@example.com';
     }
     
     // Recalculate Payment Summary
+    $customPrice = request()->query('price');
     $ticketsPrice = 0;
     $ticketGstTotal = 0;
-    foreach ($selectedSeats as $seat) {
-        $row = substr($seat, 0, 1);
-        $price = in_array($row, ['A', 'B']) ? 450 : 250;
-        $ticketsPrice += $price;
-        
-        if ($price <= 100) {
-            $ticketGstTotal += $price * 0.05;
-        } else {
-            $ticketGstTotal += $price * 0.18;
+    
+    if ($customPrice) {
+        $ticketsPrice = (float)$customPrice * count($selectedSeats);
+        $ticketGstTotal = $ticketsPrice * 0.18;
+    } else {
+        foreach ($selectedSeats as $seat) {
+            $row = substr($seat, 0, 1);
+            $price = in_array($row, ['A', 'B']) ? 450 : 250;
+            $ticketsPrice += $price;
+            
+            if ($price <= 100) {
+                $ticketGstTotal += $price * 0.05;
+            } else {
+                $ticketGstTotal += $price * 0.18;
+            }
         }
     }
     
@@ -41,10 +58,10 @@
 
         <div class="ticket-card">
             <div class="ticket-top">
-                <div class="ticket-poster poster-6">🗡️</div>
+                <div class="ticket-poster {{ $image ? '' : $poster }}" style="{{ $image ? "background-image: url('".asset('assets/images/movies/'.$image)."'); background-size: cover; background-position: center;" : '' }}">{{ $image ? '' : $emoji }}</div>
                 <div style="flex: 1;">
-                    <div class="badge badge-red mb-2">IMAX · HINDI</div>
-                    <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">DHURANDHAR 2</h2>
+                    <div class="badge badge-red mb-2" style="text-transform: uppercase;">{{ $format }} · {{ $language }}</div>
+                    <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">{{ strtoupper($title) }}</h2>
                     <div style="font-size: 13px; color: var(--muted);">PVR Phoenix Mall | Screen 4</div>
                     <div style="font-size: 13px; color: var(--muted); margin-top: 4px;">Today, 07:15 PM</div>
                 </div>
@@ -114,12 +131,38 @@
             </div>
         </div>
 
-        <div style="margin-top: 40px; display: flex; flex-direction: column; gap: 16px;">
+        <div id="action-buttons-container" style="margin-top: 40px; display: flex; flex-direction: column; gap: 16px;">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                <button class="btn btn-ghost" style="padding: 14px; border-radius: 12px;">📥 Download PDF</button>
-                <button class="btn btn-ghost" style="padding: 14px; border-radius: 12px;">🔗 Share Ticket</button>
+                <button class="btn btn-ghost" style="padding: 14px; border-radius: 12px;" onclick="window.print()">📥 Download PDF</button>
+                <button class="btn btn-ghost" style="padding: 14px; border-radius: 12px;" onclick="shareTicket()">🔗 Share Ticket</button>
             </div>
             <button class="btn btn-primary btn-lg" style="padding: 16px; border-radius: 12px; font-size: 16px;" onclick="window.location.href='{{ route('home') }}'">Back to Home</button>
         </div>
     </div>
+
+    <style>
+        @media print {
+            body { background: #0b0b0f !important; color: #fff !important; }
+            nav, footer, .btn { display: none !important; }
+            .confirm-wrapper { margin-top: 0 !important; padding: 20px !important; }
+        }
+    </style>
+    
+    <script>
+        function shareTicket() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'TicketFlix Booking: {{ addslashes(strtoupper($title)) }}',
+                    text: 'I just booked tickets for {{ addslashes(strtoupper($title)) }}! Check out my seats: {{ implode(", ", $selectedSeats) }}',
+                    url: window.location.href
+                }).catch(console.error);
+            } else {
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    alert('Ticket link copied to clipboard!');
+                }).catch(err => {
+                    alert('Failed to copy link.');
+                });
+            }
+        }
+    </script>
 </x-layouts.app>
