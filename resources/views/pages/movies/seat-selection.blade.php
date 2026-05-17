@@ -75,7 +75,7 @@
             <div class="booking-bar-info" style="text-align: right; position: relative;">
                 <div style="font-size: 12px; color: var(--muted); text-transform: uppercase;">Total Amount</div>
                 <div class="booking-total">₹ 0.00 <small>incl. taxes</small></div>
-                <div id="view-breakup-btn" style="font-size: 11px; color: var(--gold); cursor: pointer; text-decoration: underline; margin-top: 4px; display: none;" onclick="toggleBreakup()">View Breakup</div>
+                <div id="view-breakup-btn" style="font-size: 11px; color: var(--gold); cursor: pointer; text-decoration: underline; margin-top: 4px; display: none;" onclick="toggleBreakup(event)">View Breakup</div>
                 
                 <!-- Price Breakup Popup -->
                 <div id="price-breakup-popup" style="display: none; position: absolute; bottom: 100%; right: 0; background: var(--surface); border: 1px solid var(--border); padding: 16px; border-radius: 8px; width: 260px; margin-bottom: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 100; text-align: left;">
@@ -184,10 +184,22 @@
             }
         }
         
-        window.toggleBreakup = function() {
+        window.toggleBreakup = function(event) {
+            if (event) event.stopPropagation();
             const popup = document.getElementById('price-breakup-popup');
             popup.style.display = (popup.style.display === 'none' || popup.style.display === '') ? 'block' : 'none';
         };
+        
+        // Close popup when clicking outside
+        document.addEventListener('click', function(event) {
+            const popup = document.getElementById('price-breakup-popup');
+            const btn = document.getElementById('view-breakup-btn');
+            if (popup && popup.style.display === 'block') {
+                if (!popup.contains(event.target) && event.target !== btn) {
+                    popup.style.display = 'none';
+                }
+            }
+        });
         
         window.proceedToCheckout = function() {
             const selectedSeats = Array.from(document.querySelectorAll('.seat.selected')).map(el => el.getAttribute('data-seat-id'));

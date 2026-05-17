@@ -105,22 +105,22 @@
                 </div>
 
                 <!-- Step 3: Payment Method -->
-                <div class="payment-section-box">
+                <div class="payment-section-box" id="payment-method-section" style="display: none; opacity: 0; transition: opacity 0.4s ease;">
                     <div class="payment-step-title">
                         <span class="step-badge">3</span>
                         Payment Method
                     </div>
                     
-                    <div class="payment-method-item active">
+                    <div class="payment-method-item active" id="pm-card" onclick="selectPaymentMethod('card')" style="cursor: pointer;">
                         <div class="payment-method-icon">💳</div>
                         <div style="flex: 1;">
                             <div style="font-weight: 600; font-size: 14px;">Credit / Debit Card</div>
                             <div style="font-size: 11px; color: var(--muted);">Visa, Mastercard, RuPay, Maestro</div>
                         </div>
-                        <div style="width: 18px; height: 18px; border: 5px solid var(--red); border-radius: 50%;"></div>
+                        <div id="pm-card-radio" style="width: 18px; height: 18px; border: 5px solid var(--red); border-radius: 50%;"></div>
                     </div>
 
-                    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                    <div id="pm-card-details" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
                         <div class="form-group" style="margin-bottom: 16px;">
                             <label class="form-label">Card Number</label>
                             <input type="text" class="form-input" placeholder="XXXX XXXX XXXX XXXX" style="background: var(--surface2);">
@@ -137,13 +137,20 @@
                         </div>
                     </div>
 
-                    <div class="payment-method-item">
+                    <div class="payment-method-item" id="pm-upi" onclick="selectPaymentMethod('upi')" style="cursor: pointer;">
                         <div class="payment-method-icon">📱</div>
                         <div style="flex: 1;">
                             <div style="font-weight: 600; font-size: 14px;">UPI Payment</div>
                             <div style="font-size: 11px; color: var(--muted);">Google Pay, PhonePe, Paytm</div>
                         </div>
-                        <div style="width: 18px; height: 18px; border: 1px solid var(--border); border-radius: 50%;"></div>
+                        <div id="pm-upi-radio" style="width: 18px; height: 18px; border: 1px solid var(--border); border-radius: 50%;"></div>
+                    </div>
+                    
+                    <div id="pm-upi-details" style="display: none; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; text-align: center;">
+                        <div style="margin-bottom: 16px;">
+                            <img id="upi-qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=trishyanigam@okicici&pn=Trishya%20Nigam&am={{ $totalAmount }}&cu=INR" alt="UPI QR Code" style="border-radius: 8px; border: 4px solid var(--white);">
+                        </div>
+                        <div style="font-size: 12px; color: var(--muted); margin-bottom: 8px;">Scan QR with any UPI app to pay to Trishya Nigam</div>
                     </div>
 
                     <div class="payment-method-item">
@@ -193,7 +200,7 @@
                     <span style="color: var(--white);" id="summary-total">₹ {{ number_format($totalAmount, 2) }}</span>
                 </div>
 
-                <button class="btn btn-primary w-full btn-lg" id="btn-pay" style="margin-top: 32px; padding: 16px; border-radius: 12px; font-size: 16px; letter-spacing: 1px;" onclick="window.location.href='{{ route('payment.success') }}?seats={{ urlencode($seatsParam) }}'">🔒 Pay ₹ {{ number_format($totalAmount, 2) }}</button>
+                <button class="btn btn-primary w-full btn-lg" id="btn-pay" style="margin-top: 32px; padding: 16px; border-radius: 12px; font-size: 16px; letter-spacing: 1px;">🔒 Pay ₹ {{ number_format($totalAmount, 2) }}</button>
                 
                 <div style="text-align: center; margin-top: 20px; font-size: 11px; color: var(--muted2);">
                     🔒 256-bit SSL Encrypted · Secure Payment
@@ -210,6 +217,31 @@
         
         let appliedCoupon = null;
         let discount = 0.00;
+        
+        window.selectPaymentMethod = function(method) {
+            const cardItem = document.getElementById('pm-card');
+            const upiItem = document.getElementById('pm-upi');
+            const cardRadio = document.getElementById('pm-card-radio');
+            const upiRadio = document.getElementById('pm-upi-radio');
+            const cardDetails = document.getElementById('pm-card-details');
+            const upiDetails = document.getElementById('pm-upi-details');
+            
+            if (method === 'card') {
+                cardItem.classList.add('active');
+                upiItem.classList.remove('active');
+                cardRadio.style.border = '5px solid var(--red)';
+                upiRadio.style.border = '1px solid var(--border)';
+                cardDetails.style.display = 'block';
+                upiDetails.style.display = 'none';
+            } else if (method === 'upi') {
+                upiItem.classList.add('active');
+                cardItem.classList.remove('active');
+                upiRadio.style.border = '5px solid var(--red)';
+                cardRadio.style.border = '1px solid var(--border)';
+                upiDetails.style.display = 'block';
+                cardDetails.style.display = 'none';
+            }
+        };
         
         window.selectOffer = function(code) {
             if (code === 'FIRST100' && !isFirstBooking) {
@@ -281,15 +313,42 @@
             
             document.getElementById('summary-total').textContent = '₹ ' + total.toLocaleString('en-IN', { minimumFractionDigits: 2 });
             
+            // Update UPI QR Code dynamically based on final total
+            const qrCodeImage = document.getElementById('upi-qr-code');
+            if (qrCodeImage) {
+                qrCodeImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=trishyanigam@okicici&pn=Trishya%20Nigam&am=${total.toFixed(2)}&cu=INR`;
+            }
+            
             // Update Pay Button
             const payBtn = document.getElementById('btn-pay');
-            payBtn.textContent = `🔒 Pay ₹ ${total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+            const paymentSection = document.getElementById('payment-method-section');
+            
+            if (paymentSection.style.display === 'none' || paymentSection.style.display === '') {
+                payBtn.textContent = `🔒 Proceed to Pay ₹ ${total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+            } else {
+                payBtn.textContent = `🔒 Complete Payment ₹ ${total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+            }
+            
             payBtn.onclick = function() {
-                const nameVal = encodeURIComponent(document.getElementById('contact-name').value.trim());
-                const emailVal = encodeURIComponent(document.getElementById('contact-email').value.trim());
-                const phoneVal = encodeURIComponent(document.getElementById('contact-phone').value.trim());
-                
-                window.location.href = `{{ route('payment.success') }}?seats={{ urlencode($seatsParam) }}&discount=${discount}&coupon=${appliedCoupon || ''}&name=${nameVal}&email=${emailVal}&phone=${phoneVal}`;
+                if (paymentSection.style.display === 'none' || paymentSection.style.display === '') {
+                    // Reveal Payment Method section
+                    paymentSection.style.display = 'block';
+                    void paymentSection.offsetWidth; // trigger reflow
+                    paymentSection.style.opacity = '1';
+                    
+                    // Smooth scroll to the payment methods
+                    paymentSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Update button text to final state
+                    payBtn.textContent = `🔒 Complete Payment ₹ ${total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+                } else {
+                    // Final submit action
+                    const nameVal = encodeURIComponent(document.getElementById('contact-name').value.trim());
+                    const emailVal = encodeURIComponent(document.getElementById('contact-email').value.trim());
+                    const phoneVal = encodeURIComponent(document.getElementById('contact-phone').value.trim());
+                    
+                    window.location.href = `{{ route('payment.success') }}?seats={{ urlencode($seatsParam) }}&discount=${discount}&coupon=${appliedCoupon || ''}&name=${nameVal}&email=${emailVal}&phone=${phoneVal}`;
+                }
             };
             
             // Update Coupon Card UI highlights

@@ -36,6 +36,9 @@ Route::get('/payment', [PaymentController::class, 'checkout'])
 Route::get('/success', [PaymentController::class, 'success'])
     ->name('payment.success');
 
+Route::get('/failed', [PaymentController::class, 'failed'])
+    ->name('payment.failed');
+
 Route::get('/admin', [DashboardController::class, 'index'])
     ->name('admin.dashboard');
 require __DIR__.'/auth.php';

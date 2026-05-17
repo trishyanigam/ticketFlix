@@ -2,10 +2,37 @@
 @php
     $seatsParam = request()->query('seats', 'G7,G8,G9');
     $formattedSeats = str_replace(',', ', ', $seatsParam);
+    $selectedSeats = explode(',', $seatsParam);
+    
     $email = request()->query('email');
     if (!$email) {
         $email = auth()->check() ? auth()->user()->email : 'your-email@example.com';
     }
+    
+    // Recalculate Payment Summary
+    $ticketsPrice = 0;
+    $ticketGstTotal = 0;
+    foreach ($selectedSeats as $seat) {
+        $row = substr($seat, 0, 1);
+        $price = in_array($row, ['A', 'B']) ? 450 : 250;
+        $ticketsPrice += $price;
+        
+        if ($price <= 100) {
+            $ticketGstTotal += $price * 0.05;
+        } else {
+            $ticketGstTotal += $price * 0.18;
+        }
+    }
+    
+    $convenienceFee = $ticketsPrice * 0.05;
+    $convenienceFeeGst = $convenienceFee * 0.18;
+    $gstAmount = $ticketGstTotal + $convenienceFeeGst;
+    
+    $discount = (float)request()->query('discount', 0);
+    $coupon = request()->query('coupon', '');
+    
+    $totalAmount = $ticketsPrice + $convenienceFee + $gstAmount - $discount;
+    if ($totalAmount < 0) $totalAmount = 0;
 @endphp
     <div class="confirm-wrapper">
         <div class="success-icon-circle">✓</div>
@@ -52,6 +79,38 @@
                         <div style="font-size: 10px; color: var(--muted2); margin-top: 4px;">Show this QR at the entrance</div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Payment Summary Invoice -->
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-top: 24px; text-align: left;">
+            <h3 style="font-size: 14px; font-weight: 700; color: var(--muted); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px;">Payment Summary</h3>
+            
+            <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 12px;">
+                <span style="color: var(--muted2);">Tickets Subtotal ({{ count($selectedSeats) }} Seats)</span>
+                <span style="font-weight: 600;">₹ {{ number_format($ticketsPrice, 2) }}</span>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 12px;">
+                <span style="color: var(--muted2);">Convenience Fee (5%)</span>
+                <span style="font-weight: 600;">₹ {{ number_format($convenienceFee, 2) }}</span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 12px;">
+                <span style="color: var(--muted2);">Total GST (Ticket + Fee)</span>
+                <span style="font-weight: 600;">₹ {{ number_format($gstAmount, 2) }}</span>
+            </div>
+
+            @if($discount > 0)
+            <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 12px; color: var(--green);">
+                <span>Discount ({{ $coupon }})</span>
+                <span style="font-weight: 600;">−₹ {{ number_format($discount, 2) }}</span>
+            </div>
+            @endif
+
+            <div style="display: flex; justify-content: space-between; font-size: 18px; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border);">
+                <span style="font-weight: 700; color: var(--gold);">Amount Paid</span>
+                <span style="font-weight: 700; color: var(--gold);">₹ {{ number_format($totalAmount, 2) }}</span>
             </div>
         </div>
 

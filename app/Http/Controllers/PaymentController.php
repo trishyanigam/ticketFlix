@@ -15,4 +15,9 @@ class PaymentController extends Controller
     {
         return view('pages.payment.success');
     }
+
+    public function failed()
+    {
+        return view('pages.payment.failed');
+    }
 }
