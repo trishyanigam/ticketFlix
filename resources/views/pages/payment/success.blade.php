@@ -14,10 +14,7 @@
     $languages = request()->query('languages', 'Hindi');
     $language = explode(',', $languages)[0];
     
-    $email = request()->query('email');
-    if (!$email) {
-        $email = auth()->check() ? auth()->user()->email : 'your-email@example.com';
-    }
+    $email = auth()->user()->email;
     
     // Recalculate Payment Summary
     $customPrice = request()->query('price');
