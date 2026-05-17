@@ -2,8 +2,8 @@
     <div class="auth-container">
         <div class="auth-left">
             <div class="auth-left-logo">TICKET<span>FLIX</span></div>
-            <div class="auth-left-tagline">Join the World of Premium Entertainment.</div>
-            <p>Create an account to unlock personalized recommendations, early access to tickets, and exclusive member-only deals.</p>
+            <div class="auth-left-tagline">Create an account to start booking.</div>
+            <p style="color: rgba(255,255,255,0.6); line-height: 1.6;">Get access to exclusive movie premieres, early bird event tickets, and personalized recommendations based on your interests.</p>
             
             <div class="auth-features">
                 <div class="auth-feat">
@@ -26,33 +26,38 @@
                 <div class="auth-tab active">Register</div>
             </div>
 
-            <form action="#">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Full Name</label>
-                        <input type="text" class="form-input" placeholder="Rahul Sharma">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Mobile</label>
-                        <input type="text" class="form-input" placeholder="+91">
-                    </div>
+            <form method="POST" action="{{ route('register') }}">
+                @csrf
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" name="name" class="form-input @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="Arjun Sharma" required autofocus>
+                    @error('name')
+                        <span class="text-red" style="font-size: 12px;">{{ $message }}</span>
+                    @enderror
                 </div>
                 <div class="form-group">
                     <label class="form-label">Email Address</label>
-                    <input type="email" class="form-input" placeholder="name@example.com">
+                    <input type="email" name="email" class="form-input @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="name@example.com" required>
+                    @error('email')
+                        <span class="text-red" style="font-size: 12px;">{{ $message }}</span>
+                    @enderror
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Password</label>
-                        <input type="password" class="form-input" placeholder="••••••••">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Confirm</label>
-                        <input type="password" class="form-input" placeholder="••••••••">
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-input @error('password') is-invalid @enderror" placeholder="••••••••" required>
+                    @error('password')
+                        <span class="text-red" style="font-size: 12px;">{{ $message }}</span>
+                    @enderror
                 </div>
-                <p class="text-muted mb-2" style="font-size: 11px;">By registering, you agree to our <span class="text-red">Terms & Conditions</span> and <span class="text-red">Privacy Policy</span>.</p>
-                <button class="btn btn-primary btn-lg w-full" type="button" onclick="window.location.href='{{ route('home') }}'">Create Account</button>
+                <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" name="password_confirmation" class="form-input" placeholder="••••••••" required>
+                </div>
+                <div class="flex items-center gap-1 mb-4">
+                    <input type="checkbox" id="terms" name="terms" style="accent-color: var(--red);" required>
+                    <label for="terms" class="text-muted" style="font-size: 13px;">I agree to the <a href="#" class="text-red" style="text-decoration: none;">Terms & Conditions</a></label>
+                </div>
+                <button class="btn btn-primary btn-lg w-full" type="submit">Create Account</button>
             </form>
 
             <div class="social-auth">

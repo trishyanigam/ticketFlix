@@ -38,9 +38,4 @@ Route::get('/success', [PaymentController::class, 'success'])
 
 Route::get('/admin', [DashboardController::class, 'index'])
     ->name('admin.dashboard');
-
-Route::view('/login', 'pages.auth.login')
-    ->name('login');
-
-Route::view('/register', 'pages.auth.register')
-    ->name('register');
+require __DIR__.'/auth.php';

@@ -26,23 +26,39 @@
                 <div class="auth-tab" onclick="window.location.href='{{ route('register') }}'">Register</div>
             </div>
 
-            <form action="#">
+            <!-- Session Status -->
+            @if(session('status'))
+                <div class="mb-4 text-green" style="font-size: 14px;">
+                    {{ session('status') }}
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
                 <div class="form-group">
                     <label class="form-label">Email Address</label>
-                    <input type="email" class="form-input" placeholder="name@example.com">
+                    <input type="email" name="email" class="form-input @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="name@example.com" required autofocus>
+                    @error('email')
+                        <span class="text-red" style="font-size: 12px;">{{ $message }}</span>
+                    @enderror
                 </div>
                 <div class="form-group">
                     <label class="form-label">Password</label>
-                    <input type="password" class="form-input" placeholder="••••••••">
+                    <input type="password" name="password" class="form-input @error('password') is-invalid @enderror" placeholder="••••••••" required autocomplete="current-password">
+                    @error('password')
+                        <span class="text-red" style="font-size: 12px;">{{ $message }}</span>
+                    @enderror
                 </div>
                 <div class="flex justify-between items-center mb-3">
                     <div class="flex items-center gap-1">
-                        <input type="checkbox" id="remember" style="accent-color: var(--red);">
-                        <label for="remember" class="text-muted" style="font-size: 13px;">Remember me</label>
+                        <input type="checkbox" id="remember_me" name="remember" style="accent-color: var(--red);">
+                        <label for="remember_me" class="text-muted" style="font-size: 13px;">Remember me</label>
                     </div>
-                    <a href="#" class="text-red" style="font-size: 13px; text-decoration: none;">Forgot Password?</a>
+                    @if (Route::has('password.request'))
+                        <a href="{{ route('password.request') }}" class="text-red" style="font-size: 13px; text-decoration: none;">Forgot Password?</a>
+                    @endif
                 </div>
-                <button class="btn btn-primary btn-lg w-full" type="button" onclick="window.location.href='{{ route('home') }}'">Sign In</button>
+                <button class="btn btn-primary btn-lg w-full" type="submit">Sign In</button>
             </form>
 
             <div class="social-auth">

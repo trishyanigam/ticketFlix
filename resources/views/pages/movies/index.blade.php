@@ -43,36 +43,63 @@
     <section class="container" style="padding-top: 60px; padding-bottom: 60px;">
         <div class="movies-grid-4" style="grid-template-columns: repeat(4, 1fr); gap: 32px;">
             <x-movie.movie-card 
-                title="Blaze" full_title="Blaze of Glory" rating="8.4" genre="Action" duration="2h 28m" emoji="🔥" poster="poster-1" 
-                :formats="['IMAX', '3D', '2D']" 
+                title="Dhurandhar" full_title="Dhurandhar 2" rating="8.8" genre="Action/Thriller" duration="2h 37m" emoji="🗡️" poster="poster-6" 
+                image="dhurandhar2.jpg"
+                :formats="['IMAX', '2D']" 
             />
             <x-movie.movie-card 
-                title="Void" full_title="Void Runners" rating="9.1" genre="Sci-Fi" duration="2h 52m" emoji="🌌" poster="poster-2" 
-                :formats="['IMAX', '4DX']" 
-            />
-            <x-movie.movie-card 
-                title="Roots" full_title="Roots & Ruins" rating="7.8" genre="Drama" duration="2h 10m" emoji="🌿" poster="poster-3" 
-                :formats="['2D']" 
-            />
-            <x-movie.movie-card 
-                title="Throne" full_title="Throne of Steel" rating="8.7" genre="Epic" duration="3h 5m" emoji="⚔️" poster="poster-4" 
-                :formats="['IMAX', '3D']" 
-            />
-            
-            <x-movie.movie-card 
-                title="Nexus" full_title="Nexus Protocol" rating="8.2" genre="Thriller" duration="2h 18m" emoji="🧬" poster="poster-5" 
+                title="Krishna" 
+                full_title="Krishnavataram Part 1: The Heart"
+                rating="9.1" 
+                genre="Adventure/Devotional/Drama" 
+                duration="2h 45m" 
+                emoji="🕉️" 
+                poster="poster-1" 
+                image="Krishnavataram_Part_1_The_Heart.jpg"
                 :formats="['2D', '3D']" 
             />
             <x-movie.movie-card 
-                title="Surge" full_title="Surge: Reloaded" rating="7.5" genre="Action" duration="1h 58m" emoji="⚡" poster="poster-4" 
+                title="Aakhri" 
+                full_title="Aakhri Sawal"
+                rating="9.3" 
+                genre="Drama" 
+                duration="2h 15m" 
+                emoji="⚖️" 
+                poster="poster-3" 
+                image="akhiri_sawaal.jpg"
                 :formats="['2D']" 
             />
             <x-movie.movie-card 
-                title="Deep" full_title="Deep Blue Fear" rating="7.2" genre="Horror" duration="1h 50m" emoji="🌊" poster="poster-2" 
-                :formats="['IMAX', '3D']" 
+                title="Michael" 
+                full_title="Michael"
+                rating="8.5" 
+                genre="Action/Thriller" 
+                duration="2h 30m" 
+                emoji="🕶️" 
+                poster="poster-2" 
+                image="michael.jpg"
+                :formats="['2D', 'IMAX']" 
             />
             <x-movie.movie-card 
-                title="Petal" full_title="Last Petal" rating="8.0" genre="Romance" duration="2h 5m" emoji="🌹" poster="poster-1" 
+                title="Project" 
+                full_title="Project Hail Mary"
+                rating="9.0" 
+                genre="Sci-Fi/Adventure" 
+                duration="2h 20m" 
+                emoji="🚀" 
+                poster="poster-4" 
+                image="project_hail_marry.jpg"
+                :formats="['2D', 'IMAX 3D']" 
+            />
+            <x-movie.movie-card 
+                title="Pati" 
+                full_title="Pati Patni Aur Woh Do"
+                rating="8.9" 
+                genre="Comedy/Romantic" 
+                duration="2h 10m" 
+                emoji="👩‍❤️‍👨" 
+                poster="poster-1" 
+                image="pati_patni_aur_wo_do.jpg"
                 :formats="['2D']" 
             />
         </div>

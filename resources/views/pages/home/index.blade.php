@@ -79,11 +79,61 @@
         </div>
         
         <div class="movies-grid" style="grid-template-columns: repeat(5, 1fr); gap: 40px;">
-            <x-movie.movie-card title="Blaze" rating="8.4" genre="Action" duration="2h 28m" emoji="🔥" poster="poster-1" />
-            <x-movie.movie-card title="Void" rating="9.1" genre="Sci-Fi" duration="2h 52m" emoji="🌌" poster="poster-2" />
-            <x-movie.movie-card title="Roots" rating="7.8" genre="Drama" duration="2h 10m" emoji="🌿" poster="poster-3" />
-            <x-movie.movie-card title="Throne" rating="8.7" genre="Epic" duration="3h 5m" emoji="⚔️" poster="poster-4" />
-            <x-movie.movie-card title="Nexus" rating="8.2" genre="Thriller" duration="2h 18m" emoji="🧬" poster="poster-5" />
+            <x-movie.movie-card 
+                title="Dhurandhar" 
+                full_title="Dhurandhar 2"
+                rating="8.8" 
+                genre="Action/Thriller" 
+                duration="2h 37m" 
+                emoji="🗡️" 
+                poster="poster-6" 
+                image="dhurandhar2.jpg"
+                :formats="['2D', 'IMAX 2D']"
+            />
+            <x-movie.movie-card 
+                title="Krishna" 
+                full_title="Krishnavataram Part 1: The Heart"
+                rating="9.1" 
+                genre="Adventure/Devotional/Drama" 
+                duration="2h 45m" 
+                emoji="🕉️" 
+                poster="poster-1" 
+                image="Krishnavataram_Part_1_The_Heart.jpg"
+                :formats="['2D', '3D']"
+            />
+            <x-movie.movie-card 
+                title="Aakhri" 
+                full_title="Aakhri Sawal"
+                rating="9.3" 
+                genre="Drama" 
+                duration="2h 15m" 
+                emoji="⚖️" 
+                poster="poster-3" 
+                image="akhiri_sawaal.jpg"
+                :formats="['2D']"
+            />
+            <x-movie.movie-card 
+                title="Michael" 
+                full_title="Michael"
+                rating="8.5" 
+                genre="Action/Thriller" 
+                duration="2h 30m" 
+                emoji="🕶️" 
+                poster="poster-2" 
+                image="michael.jpg"
+                :formats="['2D', 'IMAX']"
+            />
+            <x-movie.movie-card 
+                title="Project" 
+                full_title="Project Hail Mary"
+                rating="9.0" 
+                genre="Sci-Fi/Adventure" 
+                duration="2h 20m" 
+                emoji="🚀" 
+                poster="poster-4" 
+                image="project_hail_marry.jpg"
+                :formats="['2D', 'IMAX 3D']"
+            />
         </div>
     </section>
 

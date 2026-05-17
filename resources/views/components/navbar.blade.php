@@ -11,10 +11,17 @@
         </div>
         <div class="nav-right">
             <div class="nav-city">📍 Mumbai ▾</div>
-            <a href="{{ route('profile.dashboard') }}" class="nav-city" style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
-                <span style="color: #9f7aea;">👤</span> My Account
-            </a>
-            <a href="{{ route('login') }}" class="btn btn-primary" style="padding: 8px 20px; border-radius: 6px;">Sign In</a>
+            @auth
+                <a href="{{ route('profile.dashboard') }}" class="nav-city" style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                    <span style="color: #9f7aea;">👤</span> {{ Auth::user()->name }}
+                </a>
+                <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-ghost" style="padding: 8px 16px; font-size: 13px; color: var(--muted);">Logout</button>
+                </form>
+            @else
+                <a href="{{ route('login') }}" class="btn btn-primary" style="padding: 8px 20px; border-radius: 6px;">Sign In</a>
+            @endauth
         </div>
     </div>
 </nav>
