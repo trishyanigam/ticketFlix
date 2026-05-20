@@ -25,7 +25,15 @@
     } else {
         foreach ($selectedSeats as $seat) {
             $row = substr($seat, 0, 1);
-            $price = in_array($row, ['A', 'B']) ? 450 : 250;
+            if (in_array($row, ['A', 'B', 'C', 'D', 'E'])) {
+                $price = 250;
+            } elseif (in_array($row, ['F', 'G'])) {
+                $price = 450;
+            } elseif ($row === 'H') {
+                $price = 650;
+            } else {
+                $price = 250;
+            }
             $ticketsPrice += $price;
             
             if ($price <= 100) {
@@ -36,6 +44,9 @@
         }
     }
     
+    $foodItems = request()->query('food_items', '');
+    $foodPrice = (float)request()->query('food_price', 0);
+    
     $convenienceFee = $ticketsPrice * 0.05;
     $convenienceFeeGst = $convenienceFee * 0.18;
     
@@ -43,7 +54,7 @@
     
     // NO coupon code applied by default
     $discount = 0.00;
-    $totalAmount = $ticketsPrice + $convenienceFee + $gstAmount - $discount;
+    $totalAmount = $ticketsPrice + $convenienceFee + $gstAmount + $foodPrice - $discount;
     if ($totalAmount < 0) $totalAmount = 0;
     
     // Enforce FIRST100 rule: check if user has previous bookings
@@ -121,6 +132,47 @@
                         </div>
                     </div>
                 </div>
+
+                @if(auth()->check() && auth()->user()->wallet_balance > 0)
+                <!-- Step 2.5: Wallet Balance -->
+                <div class="payment-section-box" style="margin-top: 24px; border: 1px solid rgba(168,85,247,0.2); background: linear-gradient(135deg, rgba(168,85,247,0.04) 0%, transparent 100%);">
+                    <div class="payment-step-title" style="color: var(--purple);">
+                        <span class="step-badge" style="background: var(--purple); font-size: 16px; display: flex; align-items: center; justify-content: center;">👛</span>
+                        Use Wallet Balance
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 16px;">
+                        <div>
+                            <div style="font-weight: 700; font-size: 15px; color: var(--white);">Your Wallet Balance: <span style="color: var(--purple);">₹{{ number_format(auth()->user()->wallet_balance, 2) }}</span></div>
+                            <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">Deduct this amount from your total ticket fare instantly.</div>
+                        </div>
+                        <label class="wallet-switch" style="position: relative; display: inline-block; width: 50px; height: 26px;">
+                            <input type="checkbox" id="use-wallet-checkbox" onchange="toggleWalletUsage(this.checked)" style="opacity: 0; width: 0; height: 0;">
+                            <span class="wallet-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--surface3); transition: .4s; border-radius: 34px; border: 1px solid var(--border);"></span>
+                        </label>
+                        <style>
+                            .wallet-switch input:checked + .wallet-slider {
+                                background-color: var(--purple);
+                                border-color: var(--purple);
+                            }
+                            .wallet-switch input:checked + .wallet-slider:before {
+                                transform: translateX(24px);
+                                background-color: var(--white);
+                            }
+                            .wallet-slider:before {
+                                position: absolute;
+                                content: "";
+                                height: 18px;
+                                width: 18px;
+                                left: 3px;
+                                bottom: 3px;
+                                background-color: var(--muted);
+                                transition: .4s;
+                                border-radius: 50%;
+                            }
+                        </style>
+                    </div>
+                </div>
+                @endif
 
                 <!-- Step 3: Payment Method -->
                 <div class="payment-section-box" id="payment-method-section" style="display: none; opacity: 0; transition: opacity 0.4s ease;">
@@ -216,9 +268,20 @@
                     <span style="color: var(--muted);">GST (18%)</span>
                     <span style="font-weight: 600;" id="summary-gst">₹ {{ number_format($gstAmount, 2) }}</span>
                 </div>
+                @if($foodPrice > 0)
+                <div class="summary-row" style="border-top: 1px dashed var(--border); padding-top: 12px; margin-top: 12px;">
+                    <span style="color: var(--muted);" title="{{ $foodItems }}">Pre-booked Food & Drinks</span>
+                    <span style="font-weight: 600; color: var(--green);">₹ {{ number_format($foodPrice, 2) }}</span>
+                </div>
+                @endif
                 <div class="summary-row" style="color: var(--green); display: none;" id="summary-discount-row">
                     <span id="summary-discount-label">Discount</span>
                     <span style="font-weight: 600;" id="summary-discount-amount">−₹ 0.00</span>
+                </div>
+                
+                <div class="summary-row" style="color: var(--purple); display: none;" id="summary-wallet-row">
+                    <span>Wallet Deduction</span>
+                    <span style="font-weight: 600;" id="summary-wallet-amount">−₹ 0.00</span>
                 </div>
 
                 <div class="summary-row total">
@@ -240,10 +303,19 @@
         const isFirstBooking = {{ $isFirstBooking ? 'true' : 'false' }};
         const ticketsPrice = {{ $ticketsPrice }};
         const ticketGstTotal = {{ $ticketGstTotal }};
+        const foodPrice = {{ $foodPrice }};
+        
+        const walletBalance = {{ auth()->check() ? auth()->user()->wallet_balance : 0 }};
+        let useWallet = false;
         
         let appliedCoupon = null;
         let discount = 0.00;
         let upiTimer = null;
+        
+        window.toggleWalletUsage = function(checked) {
+            useWallet = checked;
+            updateSummary();
+        };
         
         window.selectPaymentMethod = function(method) {
             const cardItem = document.getElementById('pm-card');
@@ -256,6 +328,24 @@
             // Reset timer
             if (upiTimer) clearTimeout(upiTimer);
             document.getElementById('upi-loader').style.display = 'none';
+            
+            // Recalculate total for current state
+            const subtotal = ticketsPrice;
+            const convenienceFee = subtotal * 0.05;
+            const convenienceFeeGst = convenienceFee * 0.18;
+            const gst = ticketGstTotal + convenienceFeeGst;
+            
+            let total = subtotal + convenienceFee + gst + foodPrice - discount;
+            let walletApplied = 0.00;
+            if (useWallet) {
+                if (total >= walletBalance) {
+                    walletApplied = walletBalance;
+                } else {
+                    walletApplied = total;
+                }
+            }
+            total = total - walletApplied;
+            if (total < 0) total = 0;
             
             if (method === 'card') {
                 cardItem.classList.add('active');
@@ -278,7 +368,7 @@
                     const nameVal = encodeURIComponent(document.getElementById('contact-name').value.trim());
                     const emailVal = encodeURIComponent(document.getElementById('contact-email').value.trim());
                     const phoneVal = encodeURIComponent(document.getElementById('contact-phone').value.trim());
-                    window.location.href = `{{ route('payment.success') }}?{!! $queryString !!}&discount=${discount}&coupon=${appliedCoupon || ''}&name=${nameVal}&email=${emailVal}&phone=${phoneVal}`;
+                    window.location.href = `{{ route('payment.success') }}?{!! $queryString !!}&price=${total.toFixed(2)}&discount=${discount}&coupon=${appliedCoupon || ''}&name=${nameVal}&email=${emailVal}&phone=${phoneVal}&wallet_used=${walletApplied.toFixed(2)}`;
                 }, 8000);
             }
         };
@@ -338,10 +428,22 @@
             const convenienceFeeGst = convenienceFee * 0.18;
             const gst = ticketGstTotal + convenienceFeeGst;
             
-            let total = subtotal + convenienceFee + gst - discount;
+            let total = subtotal + convenienceFee + gst + foodPrice - discount;
+            
+            // Calculate wallet deduction
+            let walletApplied = 0.00;
+            if (useWallet) {
+                if (total >= walletBalance) {
+                    walletApplied = walletBalance;
+                } else {
+                    walletApplied = total;
+                }
+            }
+            
+            total = total - walletApplied;
             if (total < 0) total = 0;
             
-            // Update Summary Row Display
+            // Update Summary Row Display for Coupon Discount
             const discountRow = document.getElementById('summary-discount-row');
             if (discount > 0) {
                 discountRow.style.display = 'flex';
@@ -349,6 +451,17 @@
                 document.getElementById('summary-discount-amount').textContent = `−₹ ${discount.toFixed(2)}`;
             } else {
                 discountRow.style.display = 'none';
+            }
+            
+            // Update Summary Row Display for Wallet Deduction
+            const walletRow = document.getElementById('summary-wallet-row');
+            if (walletApplied > 0) {
+                if (walletRow) {
+                    walletRow.style.display = 'flex';
+                    document.getElementById('summary-wallet-amount').textContent = `−₹ ${walletApplied.toFixed(2)}`;
+                }
+            } else {
+                if (walletRow) walletRow.style.display = 'none';
             }
             
             document.getElementById('summary-total').textContent = '₹ ' + total.toLocaleString('en-IN', { minimumFractionDigits: 2 });
@@ -387,7 +500,7 @@
                     const emailVal = encodeURIComponent(document.getElementById('contact-email').value.trim());
                     const phoneVal = encodeURIComponent(document.getElementById('contact-phone').value.trim());
                     
-                    window.location.href = `{{ route('payment.success') }}?{!! $queryString !!}&discount=${discount}&coupon=${appliedCoupon || ''}&name=${nameVal}&email=${emailVal}&phone=${phoneVal}`;
+                    window.location.href = `{{ route('payment.success') }}?{!! $queryString !!}&price=${total.toFixed(2)}&discount=${discount}&coupon=${appliedCoupon || ''}&name=${nameVal}&email=${emailVal}&phone=${phoneVal}&wallet_used=${walletApplied.toFixed(2)}`;
                 }
             };
             

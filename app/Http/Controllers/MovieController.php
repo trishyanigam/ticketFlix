@@ -20,4 +20,9 @@ class MovieController extends Controller
     {
         return view('pages.movies.seat-selection');
     }
+
+    public function food()
+    {
+        return view('pages.movies.food-selection');
+    }
 }

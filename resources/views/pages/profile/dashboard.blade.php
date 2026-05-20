@@ -118,10 +118,116 @@
                     <div style="display: flex; align-items: center; margin-bottom: 24px;">
                         <h2 style="font-size: 24px; font-weight: 700; color: var(--white); font-family: var(--font-body); margin: 0;">My Wishlist</h2>
                     </div>
-                    <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 60px 40px; text-align: center; color: var(--muted);">
-                        <span style="font-size: 48px; display: block; margin-bottom: 16px;">💛</span>
-                        Your wishlist is empty. Start adding movies and events you love!
-                    </div>
+                    
+                    @if($wishlists->isEmpty())
+                        <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 60px 40px; text-align: center; color: var(--muted);">
+                            <span style="font-size: 48px; display: block; margin-bottom: 16px;">💛</span>
+                            Your wishlist is empty. Start adding movies and events you love!
+                        </div>
+                    @else
+                        @php
+                            $movies = $wishlists->where('type', 'movie');
+                            $events = $wishlists->where('type', 'event');
+                        @endphp
+                        
+                        @if($movies->isNotEmpty())
+                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 20px; color: var(--white); display: flex; align-items: center; gap: 10px; font-family: var(--font-body);">
+                                🎬 Movies
+                                <span style="font-size: 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 100px; color: var(--muted); font-weight: 600;">{{ $movies->count() }}</span>
+                            </h3>
+                            <div class="wishlist-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 24px; margin-bottom: 40px;">
+                                @foreach($movies as $item)
+                                    @php
+                                        $movieUrl = route('movies.show') . '?' . http_build_query([
+                                            'title' => $item->title,
+                                            'rating' => $item->rating,
+                                            'image' => $item->image,
+                                            'poster' => $item->poster,
+                                            'emoji' => $item->emoji,
+                                            'genre' => $item->genre,
+                                            'duration' => $item->duration,
+                                            'formats' => $item->formats,
+                                            'languages' => $item->languages,
+                                        ]);
+                                    @endphp
+                                    <div class="wishlist-card movie-card-mini" style="background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; position: relative; cursor: pointer; display: flex; flex-direction: column;" onclick="window.location.href='{{ $movieUrl }}'">
+                                        <div style="aspect-ratio: 1/1.3; position: relative; overflow: hidden; background: var(--surface3);">
+                                            <button class="wishlist-btn active" 
+                                                    data-wishlist-title="{{ $item->title }}"
+                                                    onclick="toggleWishlistAjax(event, 'movie', '{{ $item->title }}', { rating: '{{ $item->rating }}', genre: '{{ $item->genre }}', duration: '{{ $item->duration }}', emoji: '{{ $item->emoji }}', poster: '{{ $item->poster }}', image: '{{ $item->image }}', formats: '{{ $item->formats }}', languages: '{{ $item->languages }}' })"
+                                                    style="position: absolute; top: 12px; right: 12px; z-index: 10; border: none; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px); width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; cursor: pointer; color: var(--red); transition: all 0.3s ease;">
+                                                <span class="heart-icon">❤️</span>
+                                            </button>
+                                            @if($item->image)
+                                                <img src="{{ asset('assets/images/movies/' . $item->image) }}" alt="{{ $item->title }}" style="width: 100%; height: 100%; object-fit: cover; transition: all 0.5s ease;">
+                                            @else
+                                                <div class="movie-poster-img {{ $item->poster }}" style="font-size: 50px; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">{{ $item->emoji }}</div>
+                                            @endif
+                                            <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%); padding: 16px 12px 10px;">
+                                                <span style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(4px); color: var(--white); font-size: 9px; font-weight: 700; padding: 3px 6px; border-radius: 4px; text-transform: uppercase;">{{ $item->genre }}</span>
+                                            </div>
+                                        </div>
+                                        <div style="padding: 14px; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                                            <div>
+                                                <h4 style="font-size: 15px; font-weight: 700; color: var(--white); margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $item->title }}</h4>
+                                                <div style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); margin-top: 6px;">
+                                                    <span style="color: var(--gold); font-weight: 700;">⭐ {{ $item->rating }}</span>
+                                                    <span>·</span>
+                                                    <span>{{ $item->duration }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        @if($events->isNotEmpty())
+                            <h3 style="font-size: 18px; font-weight: 700; margin-top: 40px; margin-bottom: 20px; color: var(--white); display: flex; align-items: center; gap: 10px; font-family: var(--font-body);">
+                                🎉 Events
+                                <span style="font-size: 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 100px; color: var(--muted); font-weight: 600;">{{ $events->count() }}</span>
+                            </h3>
+                            <div class="wishlist-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px;">
+                                @foreach($events as $item)
+                                    @php
+                                        $eventUrl = route('events.seats') . '?' . http_build_query([
+                                            'title' => $item->title,
+                                            'image' => $item->image,
+                                            'formats' => $item->formats,
+                                            'price' => $item->price,
+                                        ]);
+                                    @endphp
+                                    <div class="wishlist-card event-card-mini" style="background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; position: relative; cursor: pointer; display: flex; flex-direction: column;" onclick="window.location.href='{{ $eventUrl }}'">
+                                        <div style="height: 150px; position: relative; overflow: hidden; background: var(--surface3);">
+                                            <button class="wishlist-btn active" 
+                                                    data-wishlist-title="{{ $item->title }}"
+                                                    onclick="toggleWishlistAjax(event, 'event', '{{ $item->title }}', { image: '{{ $item->image }}', formats: '{{ $item->formats }}', price: '{{ $item->price }}', location: '{{ $item->location }}', date_str: '{{ $item->date_str }}' })"
+                                                    style="position: absolute; top: 12px; right: 12px; z-index: 10; border: none; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px); width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; cursor: pointer; color: var(--red); transition: all 0.3s ease;">
+                                                <span class="heart-icon">❤️</span>
+                                            </button>
+                                            <img src="{{ asset('assets/images/movies/' . $item->image) }}" alt="{{ $item->title }}" style="width: 100%; height: 100%; object-fit: cover; transition: all 0.5s ease;">
+                                            <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%); padding: 16px 12px 10px;">
+                                                <span class="badge {{ $item->formats == 'Comedy' ? 'badge-gold' : ($item->formats == 'Sports' ? 'badge-green' : 'badge-red') }}" style="font-size: 9px; font-weight: 700; padding: 3px 6px; border-radius: 4px; text-transform: uppercase;">{{ $item->formats }}</span>
+                                            </div>
+                                        </div>
+                                        <div style="padding: 16px; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                                            <div>
+                                                <h4 style="font-size: 15px; font-weight: 700; color: var(--white); margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 36px; line-height: 1.3;">{{ $item->title }}</h4>
+                                                <div style="font-size: 11px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; margin-top: 10px;">
+                                                    <div>📅 {{ $item->date_str }}</div>
+                                                    <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">📍 {{ $item->location }}</div>
+                                                </div>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border);">
+                                                <div style="font-weight: 700; font-size: 14px; color: var(--white);">₹ {{ number_format($item->price) }} <span style="font-weight: 400; font-size: 10px; color: var(--muted);">onwards</span></div>
+                                                <span class="btn btn-primary btn-sm" style="font-size: 11px; padding: 4px 12px; border-radius: 6px;">Book</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    @endif
                 </div>
 
                 <!-- Wallet & Offers Section -->
@@ -483,6 +589,26 @@
         
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+        
+        /* Wishlist Premium Card styles */
+        .wishlist-card {
+            transition: var(--transition) !important;
+        }
+        .wishlist-card:hover {
+            transform: translateY(-4px) !important;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4) !important;
+            border-color: rgba(255, 255, 255, 0.15) !important;
+        }
+        .wishlist-card img {
+            transition: all 0.5s ease !important;
+        }
+        .wishlist-card:hover img {
+            transform: scale(1.05) !important;
+        }
+        .wishlist-btn:hover {
+            transform: scale(1.1) !important;
+            background: rgba(0, 0, 0, 0.7) !important;
         }
     </style>
 

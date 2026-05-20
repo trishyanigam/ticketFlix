@@ -7,6 +7,15 @@
     $querySuffix = $queryString ? '&' . $queryString : '';
 @endphp
 <x-layouts.app title="Select Seats — TicketFlix">
+    <style>
+        :root {
+            --purple: #A855F7;
+        }
+        .seat.recliner { border-color: rgba(168,85,247,0.4); background: rgba(168,85,247,0.08); }
+        .seat.recliner:hover:not(.booked) { border-color: var(--purple); background: rgba(168,85,247,0.2); }
+        .seat.recliner.selected { background: var(--purple) !important; border-color: var(--purple) !important; }
+        .ls-recliner { background: rgba(168,85,247,0.2); border: 1px solid var(--purple); }
+    </style>
     <div class="movies-page-header" style="padding-bottom: 32px; padding-top: 40px;">
         <div class="container">
             <div class="breadcrumb" style="margin-bottom: 24px;">
@@ -44,29 +53,43 @@
             <div class="legend-item"><div class="legend-seat ls-selected"></div> Selected</div>
             <div class="legend-item"><div class="legend-seat ls-booked"></div> Booked</div>
             <div class="legend-item"><div class="legend-seat ls-premium"></div> Premium</div>
+            <div class="legend-item"><div class="legend-seat ls-recliner"></div> Luxury Recliner</div>
         </div>
 
-        <!-- Premium Section -->
-        <div class="seat-section-label">Premium — ₹ 450</div>
-        @foreach(['A', 'B'] as $row)
-        <div class="seat-row">
-            <div class="seat-row-label">{{ $row }}</div>
-            @for($s = 1; $s <= 12; $s++)
-                @if($s == 4 || $s == 10) <div class="seat-gap"></div> @endif
-                <div class="seat premium {{ ($row == 'A' && ($s == 5 || $s == 6)) ? 'booked' : '' }}" data-seat-id="{{ $row }}{{ $s }}" data-price="450">{{ $s }}</div>
-            @endfor
-            <div class="seat-row-label" style="margin-left: 8px;">{{ $row }}</div>
-        </div>
-        @endforeach
-
-        <!-- Executive Section -->
-        <div class="seat-section-label" style="margin-top: 60px;">Executive — ₹ 250</div>
-        @foreach(['C', 'D', 'E', 'F', 'G'] as $row)
+        <!-- Executive Section (Front near screen) -->
+        <div class="seat-section-label">Executive — ₹ 250</div>
+        @foreach(['A', 'B', 'C', 'D', 'E'] as $row)
         <div class="seat-row">
             <div class="seat-row-label">{{ $row }}</div>
             @for($s = 1; $s <= 14; $s++)
                 @if($s == 4 || $s == 12) <div class="seat-gap"></div> @endif
                 <div class="seat {{ ($row == 'D' && $s == 6) ? 'booked' : '' }}" data-seat-id="{{ $row }}{{ $s }}" data-price="250">{{ $s }}</div>
+            @endfor
+            <div class="seat-row-label" style="margin-left: 8px;">{{ $row }}</div>
+        </div>
+        @endforeach
+
+        <!-- Premium Section (Middle/Back) -->
+        <div class="seat-section-label" style="margin-top: 60px;">Premium — ₹ 450</div>
+        @foreach(['F', 'G'] as $row)
+        <div class="seat-row">
+            <div class="seat-row-label">{{ $row }}</div>
+            @for($s = 1; $s <= 12; $s++)
+                @if($s == 4 || $s == 10) <div class="seat-gap"></div> @endif
+                <div class="seat premium {{ ($row == 'F' && ($s == 5 || $s == 6)) ? 'booked' : '' }}" data-seat-id="{{ $row }}{{ $s }}" data-price="450">{{ $s }}</div>
+            @endfor
+            <div class="seat-row-label" style="margin-left: 8px;">{{ $row }}</div>
+        </div>
+        @endforeach
+
+        <!-- Luxury Recliner Section (Very back) -->
+        <div class="seat-section-label" style="margin-top: 60px;">Luxury Recliner — ₹ 650</div>
+        @foreach(['H'] as $row)
+        <div class="seat-row">
+            <div class="seat-row-label">{{ $row }}</div>
+            @for($s = 1; $s <= 8; $s++)
+                @if($s == 3 || $s == 7) <div class="seat-gap"></div> @endif
+                <div class="seat recliner {{ ($row == 'H' && $s == 4) ? 'booked' : '' }}" data-seat-id="{{ $row }}{{ $s }}" data-price="650">{{ $s }}</div>
             @endfor
             <div class="seat-row-label" style="margin-left: 8px;">{{ $row }}</div>
         </div>
@@ -216,7 +239,7 @@
                 return;
             }
             const seatsStr = selectedSeats.join(',');
-            window.location.href = `{{ route('payment.checkout') }}?seats=${encodeURIComponent(seatsStr)}{!! $querySuffix !!}`;
+            window.location.href = `{{ route('movies.food') }}?seats=${encodeURIComponent(seatsStr)}{!! $querySuffix !!}`;
         };
         
         // Initialize booking bar on page load

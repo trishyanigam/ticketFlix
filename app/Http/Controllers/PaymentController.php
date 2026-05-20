@@ -22,6 +22,11 @@ class PaymentController extends Controller
             $price = $request->query('price', 250);
             $bookingDate = date('Y-m-d');
             $showTime = 'Today, 07:15 PM';
+            $foodItems = $request->query('food_items', '');
+            $foodPrice = (float)$request->query('food_price', 0);
+            if ($foodPrice > 0 && $foodItems) {
+                $showTime .= '|' . $foodItems . '|' . $foodPrice;
+            }
             
             // Find movie
             $movie = \App\Models\Movie::where('title', $title)->first();
@@ -57,6 +62,15 @@ class PaymentController extends Controller
                     'total_price' => $price,
                     'payment_status' => 'confirmed'
                 ]);
+
+                // Deduct used wallet balance
+                $walletUsed = (float)$request->query('wallet_used', 0);
+                if ($walletUsed > 0) {
+                    $user->decrement('wallet_balance', $walletUsed);
+                }
+
+                // Increment user's wallet balance by 100.00 Rs on successful booking
+                $user->increment('wallet_balance', 100.00);
             }
         }
         

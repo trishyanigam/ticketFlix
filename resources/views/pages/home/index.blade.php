@@ -43,16 +43,35 @@
                 </div>
             </div>
         </div>
+    </section>
 
-        <div class="container" style="position: relative; z-index: 2; margin-top: 60px;">
-            <div class="offer-strip" style="background: rgba(232,25,44,0.04); border: 1px solid rgba(232,25,44,0.15); padding: 18px 28px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between;">
-                <div style="display: flex; align-items: center; gap: 20px;">
-                    <div style="width: 44px; height: 44px; background: rgba(255,255,255,0.05); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px;">🎫</div>
-                    <div style="font-size: 15px; color: var(--muted); line-height: 1.4;">
-                        <strong style="color: var(--white); font-weight: 700;">HDFC Bank Offer</strong> — Get ₹150 off on your first booking using HDFC Debit/Credit card.
+    <!-- Promos & Offers Section -->
+    <section class="promos-section" style="padding-top: 40px; padding-bottom: 20px; background: var(--black);">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                <!-- Wallet Offer Card -->
+                <div class="custom-offer-card" style="background: linear-gradient(135deg, rgba(168,85,247,0.08) 0%, rgba(232,25,44,0.03) 100%); border: 1px solid rgba(168,85,247,0.25); padding: 24px 32px; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 30px rgba(168,85,247,0.05); transition: all 0.3s ease; position: relative; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)'; this.style.borderColor='rgba(168,85,247,0.5)'; this.style.boxShadow='0 12px 30px rgba(168,85,247,0.15)';" onmouseout="this.style.transform='none'; this.style.borderColor='rgba(168,85,247,0.25)'; this.style.boxShadow='0 4px 30px rgba(168,85,247,0.05)';">
+                    <div style="display: flex; align-items: center; gap: 20px; z-index: 2;">
+                        <div style="width: 52px; height: 52px; background: rgba(168,85,247,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(168,85,247,0.1);">👛</div>
+                        <div style="line-height: 1.5;">
+                            <strong style="color: var(--white); font-weight: 700; font-size: 16px; display: block; margin-bottom: 4px; letter-spacing: 0.5px;">Welcome Wallet Bonus</strong>
+                            <span style="color: var(--muted); font-size: 14px;">Complete your first booking and get <span style="color: var(--gold); font-weight: 700;">₹100.00</span> credited instantly to your wallet!</span>
+                        </div>
                     </div>
+                    <div style="font-family: var(--font-mono); color: var(--gold); border: 1px dashed var(--gold); padding: 8px 18px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; letter-spacing: 1px; background: rgba(245,200,66,0.04); z-index: 2; transition: all 0.2s;" onmouseover="this.style.background='rgba(245,200,66,0.1)'" onmouseout="this.style.background='rgba(245,200,66,0.04)'">AUTO-CREDIT</div>
                 </div>
-                <div style="font-family: var(--font-mono); color: var(--gold); border: 1px dashed rgba(245,200,66,0.4); padding: 6px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; letter-spacing: 1px; background: rgba(245,200,66,0.03);">HDFC150 — COPY</div>
+
+                <!-- HDFC Bank Offer -->
+                <div class="custom-offer-card" style="background: linear-gradient(135deg, rgba(232,25,44,0.08) 0%, rgba(10,10,11,0.2) 100%); border: 1px solid rgba(232,25,44,0.2); padding: 24px 32px; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 30px rgba(232,25,44,0.03); transition: all 0.3s ease; position: relative; overflow: hidden;" onmouseover="this.style.transform='translateY(-4px)'; this.style.borderColor='rgba(232,25,44,0.45)'; this.style.boxShadow='0 12px 30px rgba(232,25,44,0.12)';" onmouseout="this.style.transform='none'; this.style.borderColor='rgba(232,25,44,0.2)'; this.style.boxShadow='0 4px 30px rgba(232,25,44,0.03)';">
+                    <div style="display: flex; align-items: center; gap: 20px; z-index: 2;">
+                        <div style="width: 52px; height: 52px; background: rgba(232,25,44,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(232,25,44,0.08);">🎫</div>
+                        <div style="line-height: 1.5;">
+                            <strong style="color: var(--white); font-weight: 700; font-size: 16px; display: block; margin-bottom: 4px; letter-spacing: 0.5px;">HDFC Bank Offer</strong>
+                            <span style="color: var(--muted); font-size: 14px;">Get <span style="color: var(--green); font-weight: 700;">₹150 off</span> on your first booking using HDFC Debit/Credit card.</span>
+                        </div>
+                    </div>
+                    <div style="font-family: var(--font-mono); color: var(--gold); border: 1px dashed rgba(245,200,66,0.4); padding: 8px 18px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; letter-spacing: 1px; background: rgba(245,200,66,0.03); z-index: 2; transition: all 0.2s;" onmouseover="this.style.background='rgba(245,200,66,0.08)'" onmouseout="this.style.background='rgba(245,200,66,0.03)'" onclick="navigator.clipboard.writeText('HDFC150'); alert('Promo code copied to clipboard!')">HDFC150</div>
+                </div>
             </div>
         </div>
     </section>

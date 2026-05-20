@@ -17,6 +17,7 @@
   --muted2: #5A5A66;
   --gold: #F5C842;
   --green: #1DB954;
+  --purple: #A855F7;
   --font-display: 'Bebas Neue', sans-serif;
   --font-body: 'DM Sans', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -1160,6 +1161,10 @@ section { padding: 80px 0; }
 .seat.premium { border-color: rgba(245,200,66,0.4); background: rgba(245,200,66,0.08); }
 .seat.premium:hover:not(.booked) { border-color: var(--gold); background: rgba(245,200,66,0.2); }
 .seat.premium.selected { background: var(--gold); border-color: var(--gold); }
+.seat.recliner { border-color: rgba(168,85,247,0.4); background: rgba(168,85,247,0.08); }
+.seat.recliner:hover:not(.booked) { border-color: var(--purple); background: rgba(168,85,247,0.2); }
+.seat.recliner.selected { background: var(--purple); border-color: var(--purple); }
+.ls-recliner { background: rgba(168,85,247,0.2); border: 1px solid var(--purple); }
 
 /* Booking summary bar */
 .booking-bar {

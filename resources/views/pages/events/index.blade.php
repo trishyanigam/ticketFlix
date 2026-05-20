@@ -81,6 +81,19 @@
                     <!-- Card 1 (TOXIC) -->
                     <div class="event-card-v" data-category="comedy" data-date="this-month" data-venue="indoor" data-price="1499" style="background: var(--surface2); border-radius: 24px; border: 1px solid var(--border); overflow: hidden;">
                         <div style="height: 200px; position: relative; overflow: hidden;">
+                            <!-- Wishlist Button -->
+                            <button class="wishlist-btn" 
+                                    data-wishlist-title="TOXIC - Abhishek Upmanyu Live"
+                                    onclick="toggleWishlistAjax(event, 'event', 'TOXIC - Abhishek Upmanyu Live', { image: 'event1b.jpg', formats: 'Comedy', price: '1499', location: 'The Laugh Store: DLF Mall of India', date_str: 'Sun, 5 Apr onwards' })"
+                                    style="position: absolute; top: 12px; left: 12px; z-index: 10; border: none; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; color: var(--muted); transition: all 0.3s ease;">
+                                @php
+                                    $isWishlisted = false;
+                                    if(auth()->check()) {
+                                        $isWishlisted = \App\Models\Wishlist::where('user_id', auth()->id())->where('type', 'event')->where('title', 'TOXIC - Abhishek Upmanyu Live')->exists();
+                                    }
+                                @endphp
+                                <span class="heart-icon">{{ $isWishlisted ? '❤️' : '🤍' }}</span>
+                            </button>
                             <img src="{{ asset('assets/images/movies/event1b.jpg') }}" alt="TOXIC - Abhishek Upmanyu Live" style="width: 100%; height: 100%; object-fit: cover;">
                             <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 100%; background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%);"></div>
                         </div>
@@ -102,6 +115,19 @@
                     <!-- Card 2 (IPL 2026 Grand Finale) -->
                     <div class="event-card-v" data-category="sports" data-date="this-weekend" data-venue="outdoor" data-price="1500" style="background: var(--surface2); border-radius: 24px; border: 1px solid var(--border); overflow: hidden;">
                         <div style="height: 200px; position: relative; overflow: hidden;">
+                            <!-- Wishlist Button -->
+                            <button class="wishlist-btn" 
+                                    data-wishlist-title="IPL 2026: Grand Finale"
+                                    onclick="toggleWishlistAjax(event, 'event', 'IPL 2026: Grand Finale', { image: 'event2.jpg', formats: 'Sports', price: '1500', location: 'Wankhede Stadium, Mumbai', date_str: 'Sun, 31 May 2026, 7:30 PM' })"
+                                    style="position: absolute; top: 12px; left: 12px; z-index: 10; border: none; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; color: var(--muted); transition: all 0.3s ease;">
+                                @php
+                                    $isWishlisted = false;
+                                    if(auth()->check()) {
+                                        $isWishlisted = \App\Models\Wishlist::where('user_id', auth()->id())->where('type', 'event')->where('title', 'IPL 2026: Grand Finale')->exists();
+                                    }
+                                @endphp
+                                <span class="heart-icon">{{ $isWishlisted ? '❤️' : '🤍' }}</span>
+                            </button>
                             <img src="{{ asset('assets/images/movies/event2.jpg') }}" alt="IPL 2026: Grand Finale" style="width: 100%; height: 100%; object-fit: cover;">
                             <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 100%; background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%);"></div>
                         </div>
@@ -123,6 +149,19 @@
                     <!-- Card 3 (Sunburn Festival 2026) -->
                     <div class="event-card-v" data-category="music" data-date="next-month" data-venue="outdoor" data-price="3000" style="background: var(--surface2); border-radius: 24px; border: 1px solid var(--border); overflow: hidden;">
                         <div style="height: 200px; position: relative; overflow: hidden;">
+                            <!-- Wishlist Button -->
+                            <button class="wishlist-btn" 
+                                    data-wishlist-title="Sunburn Festival 2026"
+                                    onclick="toggleWishlistAjax(event, 'event', 'Sunburn Festival 2026', { image: 'event3.avif', formats: 'Music', price: '3000', location: 'Mahalaxmi Race Course, Mumbai', date_str: 'Fri, 18 Dec onwards' })"
+                                    style="position: absolute; top: 12px; left: 12px; z-index: 10; border: none; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; color: var(--muted); transition: all 0.3s ease;">
+                                @php
+                                    $isWishlisted = false;
+                                    if(auth()->check()) {
+                                        $isWishlisted = \App\Models\Wishlist::where('user_id', auth()->id())->where('type', 'event')->where('title', 'Sunburn Festival 2026')->exists();
+                                    }
+                                @endphp
+                                <span class="heart-icon">{{ $isWishlisted ? '❤️' : '🤍' }}</span>
+                            </button>
                             <img src="{{ asset('assets/images/movies/event3.avif') }}" alt="Sunburn Festival 2026" style="width: 100%; height: 100%; object-fit: cover;">
                             <div style="position: absolute; top: 12px; right: 12px; background: var(--red); color: var(--white); font-size: 9px; font-weight: 700; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.5px; z-index: 10;">PROMOTED</div>
                             <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 100%; background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%);"></div>
@@ -145,6 +184,19 @@
                     <!-- Card 4 (Sunidhi Chauhan) -->
                     <div class="event-card-v" data-category="music" data-date="next-month" data-venue="indoor" data-price="999" style="background: var(--surface2); border-radius: 24px; border: 1px solid var(--border); overflow: hidden;">
                         <div style="height: 200px; position: relative; overflow: hidden;">
+                            <!-- Wishlist Button -->
+                            <button class="wishlist-btn" 
+                                    data-wishlist-title="Sunidhi Chauhan - I AM HOME INDIA TOUR 2025-26"
+                                    onclick="toggleWishlistAjax(event, 'event', 'Sunidhi Chauhan - I AM HOME INDIA TOUR 2025-26', { image: 'event5.jpg', formats: 'Music', price: '999', location: 'SVPI Indoor Stadium, Mumbai', date_str: 'Sat, 27 Jun 2026, 7:00 PM' })"
+                                    style="position: absolute; top: 12px; left: 12px; z-index: 10; border: none; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; color: var(--muted); transition: all 0.3s ease;">
+                                @php
+                                    $isWishlisted = false;
+                                    if(auth()->check()) {
+                                        $isWishlisted = \App\Models\Wishlist::where('user_id', auth()->id())->where('type', 'event')->where('title', 'Sunidhi Chauhan - I AM HOME INDIA TOUR 2025-26')->exists();
+                                    }
+                                @endphp
+                                <span class="heart-icon">{{ $isWishlisted ? '❤️' : '🤍' }}</span>
+                            </button>
                             <img src="{{ asset('assets/images/movies/event5.jpg') }}" alt="Sunidhi Chauhan - I AM HOME INDIA TOUR 2025-26" style="width: 100%; height: 100%; object-fit: cover;">
                             <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 100%; background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%);"></div>
                         </div>
@@ -166,6 +218,19 @@
                     <!-- Card 5 (Sufi Night 2.0) -->
                     <div class="event-card-v" data-category="music" data-date="this-weekend" data-venue="indoor" data-price="1899" style="background: var(--surface2); border-radius: 24px; border: 1px solid var(--border); overflow: hidden;">
                         <div style="height: 200px; position: relative; overflow: hidden;">
+                            <!-- Wishlist Button -->
+                            <button class="wishlist-btn" 
+                                    data-wishlist-title="Sufi Night 2.0"
+                                    onclick="toggleWishlistAjax(event, 'event', 'Sufi Night 2.0', { image: 'event4.avif', formats: 'Music', price: '1899', location: 'Cafe Crave, Sonipat', date_str: 'Sat, 23 May 2026, 8:00 PM' })"
+                                    style="position: absolute; top: 12px; left: 12px; z-index: 10; border: none; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; color: var(--muted); transition: all 0.3s ease;">
+                                @php
+                                    $isWishlisted = false;
+                                    if(auth()->check()) {
+                                        $isWishlisted = \App\Models\Wishlist::where('user_id', auth()->id())->where('type', 'event')->where('title', 'Sufi Night 2.0')->exists();
+                                    }
+                                @endphp
+                                <span class="heart-icon">{{ $isWishlisted ? '❤️' : '🤍' }}</span>
+                            </button>
                             <img src="{{ asset('assets/images/movies/event4.avif') }}" alt="Sufi Night 2.0" style="width: 100%; height: 100%; object-fit: cover;">
                             <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 100%; background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%);"></div>
                         </div>

@@ -14,6 +14,12 @@
     $languages = request()->query('languages', 'Hindi');
     $language = explode(',', $languages)[0];
     
+    $bookingDate = request()->query('booking_date');
+    if (!$bookingDate) {
+        $bookingDate = date('Y-m-d');
+    }
+    $formattedBookingDate = date('d M Y', strtotime($bookingDate));
+    
     $email = auth()->user()->email;
     
     // Recalculate Payment Summary
@@ -21,31 +27,55 @@
     $ticketsPrice = 0;
     $ticketGstTotal = 0;
     
-    if ($customPrice) {
-        $ticketsPrice = (float)$customPrice * count($selectedSeats);
-        $ticketGstTotal = $ticketsPrice * 0.18;
-    } else {
-        foreach ($selectedSeats as $seat) {
-            $row = substr($seat, 0, 1);
-            $price = in_array($row, ['A', 'B']) ? 450 : 250;
-            $ticketsPrice += $price;
-            
-            if ($price <= 100) {
-                $ticketGstTotal += $price * 0.05;
-            } else {
-                $ticketGstTotal += $price * 0.18;
-            }
+    foreach ($selectedSeats as $seat) {
+        $row = substr($seat, 0, 1);
+        if (in_array($row, ['A', 'B', 'C', 'D', 'E'])) {
+            $price = 250;
+        } elseif (in_array($row, ['F', 'G'])) {
+            $price = 450;
+        } elseif ($row === 'H') {
+            $price = 650;
+        } else {
+            $price = 250;
+        }
+        $ticketsPrice += $price;
+        
+        if ($price <= 100) {
+            $ticketGstTotal += $price * 0.05;
+        } else {
+            $ticketGstTotal += $price * 0.18;
         }
     }
+    
+    $foodItems = request()->query('food_items', '');
+    $foodPrice = (float)request()->query('food_price', 0);
     
     $convenienceFee = $ticketsPrice * 0.05;
     $convenienceFeeGst = $convenienceFee * 0.18;
     $gstAmount = $ticketGstTotal + $convenienceFeeGst;
     
-    $discount = (float)request()->query('discount', 0);
     $coupon = request()->query('coupon', '');
+    $walletUsed = (float)request()->query('wallet_used', 0);
+    $discount = (float)request()->query('discount', 0);
     
-    $totalAmount = $ticketsPrice + $convenienceFee + $gstAmount - $discount;
+    if ($customPrice !== null) {
+        $totalAmount = (float)$customPrice;
+        $totalCalculated = $ticketsPrice + $convenienceFee + $gstAmount + $foodPrice;
+        $totalDiscountAndWallet = $totalCalculated - $totalAmount;
+        
+        if ($totalDiscountAndWallet > 0) {
+            // Distribute difference between discount and wallet
+            if ($discount == 0 && $walletUsed == 0) {
+                $discount = $totalDiscountAndWallet;
+                $coupon = $coupon ?: 'Discount/Wallet';
+            }
+        } else {
+            $totalAmount = $totalCalculated;
+        }
+    } else {
+        $totalAmount = $ticketsPrice + $convenienceFee + $gstAmount + $foodPrice - $discount - $walletUsed;
+    }
+    
     if ($totalAmount < 0) $totalAmount = 0;
 @endphp
     <div class="confirm-wrapper">
@@ -69,7 +99,7 @@
             <div class="ticket-bottom">
                 <div>
                     <div class="ticket-label">Date</div>
-                    <div class="ticket-value">24 May 2026</div>
+                    <div class="ticket-value">{{ $formattedBookingDate }}</div>
                 </div>
                 <div>
                     <div class="ticket-label">Time</div>
@@ -114,6 +144,20 @@
                 <span style="color: var(--muted2);">Total GST (Ticket + Fee)</span>
                 <span style="font-weight: 600;">₹ {{ number_format($gstAmount, 2) }}</span>
             </div>
+
+            @if($foodPrice > 0)
+            <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 12px;">
+                <span style="color: var(--muted2);" title="{{ $foodItems }}">Pre-booked Food & Drinks</span>
+                <span style="font-weight: 600; color: var(--green);">₹ {{ number_format($foodPrice, 2) }}</span>
+            </div>
+            @endif
+
+            @if($walletUsed > 0)
+            <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 12px; color: var(--green);">
+                <span>Wallet Balance Applied</span>
+                <span style="font-weight: 600;">−₹ {{ number_format($walletUsed, 2) }}</span>
+            </div>
+            @endif
 
             @if($discount > 0)
             <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 12px; color: var(--green);">

@@ -11,6 +11,83 @@
     
     $queryString = request()->getQueryString();
     $querySuffix = $queryString ? '?' . $queryString : '';
+    
+    $movieCastCrew = [
+        'Dhurandhar' => [
+            'cast' => ['Ranveer Singh', 'Kiara Advani', 'Vicky Kaushal', 'Nawazuddin Siddiqui'],
+            'director' => 'Ayan Verma',
+            'music' => 'Anirudh R.'
+        ],
+        'Krishna' => [
+            'cast' => ['Prabhas', 'Deepika Padukone', 'Amitabh Bachchan', 'Kamal Haasan'],
+            'director' => 'Nag Ashwin',
+            'music' => 'Santhosh N.'
+        ],
+        'Aakhri' => [
+            'cast' => ['Ajay Devgn', 'Tabu', 'Akshaye Khanna', 'Shriya Saran'],
+            'director' => 'Abhishek Pathak',
+            'music' => 'Devi Sri Prasad'
+        ],
+        'Michael' => [
+            'cast' => ['Sundeep Kishan', 'Vijay Sethupathi', 'Divyansha K.', 'Gautham Menon'],
+            'director' => 'Ranjit Jeyakodi',
+            'music' => 'Sam C.S.'
+        ],
+        'Project' => [
+            'cast' => ['Ryan Gosling', 'Sandra Hüller', 'Milana Vayntrub', 'Thomas Kail'],
+            'director' => 'Phil Lord & Chris Miller',
+            'music' => 'Harry Gregson-W.'
+        ],
+        'Pati' => [
+            'cast' => ['Kartik Aaryan', 'Bhumi Pednekar', 'Ananya Panday', 'Aparshakti K.'],
+            'director' => 'Mudassar Aziz',
+            'music' => 'Tanishk Bagchi'
+        ],
+        'Top' => [
+            'cast' => ['Salman Khan', 'Katrina Kaif', 'Emraan Hashmi', 'Kumud Mishra'],
+            'director' => 'Maneesh Sharma',
+            'music' => 'Pritam'
+        ],
+        'Bhooth' => [
+            'cast' => ['Akshay Kumar', 'Asrani', 'Paresh Rawal', 'Rajpal Yadav'],
+            'director' => 'Priyadarshan',
+            'music' => 'Sajid-Wajid'
+        ],
+        'Chardikala' => [
+            'cast' => ['Diljit Dosanjh', 'Neeru Bajwa', 'Jaswinder Bhalla', 'Gurpreet Ghuggi'],
+            'director' => 'Jagdeep Sidhu',
+            'music' => 'B Praak'
+        ],
+        'Raja' => [
+            'cast' => ['Riteish Deshmukh', 'Genelia D\'Souza', 'Sharad Kelkar', 'Jisshu Sengupta'],
+            'director' => 'Riteish Deshmukh',
+            'music' => 'Ajay-Atul'
+        ],
+        'Blaze' => [
+            'cast' => ['Chris Hemsworth', 'Anya Taylor-Joy', 'Tom Burke', 'Lachy Hulme'],
+            'director' => 'George Miller',
+            'music' => 'Tom Holkenborg'
+        ],
+        'Void' => [
+            'cast' => ['Aaron Taylor-Johnson', 'Ariana DeBose', 'Russell Crowe', 'Fred Hechinger'],
+            'director' => 'J.C. Chandor',
+            'music' => 'Benjamin Wallfisch'
+        ]
+    ];
+
+    $currentCastCrew = [
+        'cast' => ['Ranveer Singh', 'Kiara Advani', 'Vicky Kaushal', 'Nawazuddin Siddiqui'],
+        'director' => 'Ayan Verma',
+        'music' => 'Anirudh R.'
+    ];
+    
+    $lowerTitle = strtolower($title);
+    foreach ($movieCastCrew as $key => $data) {
+        if (str_contains($lowerTitle, strtolower($key))) {
+            $currentCastCrew = $data;
+            break;
+        }
+    }
 @endphp
 <x-layouts.app title="{{ $title }} — TicketFlix">
     <div class="movie-detail-hero">
@@ -51,19 +128,65 @@
                 <p class="movie-desc">Experience the cinematic brilliance of {{ $title }}, featuring stunning visuals and a captivating storyline that will keep you on the edge of your seat.</p>
                 <div class="movie-actions">
                     <button class="btn btn-primary btn-lg" onclick="window.location.href='#showtimes'">Book Tickets</button>
-                    <button class="btn btn-ghost btn-lg">▶ Watch Trailer</button>
+                    <button class="btn btn-ghost btn-lg" style="margin-right: 12px;">▶ Watch Trailer</button>
+                    @php
+                        $isWishlisted = false;
+                        if(auth()->check()) {
+                            $isWishlisted = \App\Models\Wishlist::where('user_id', auth()->id())->where('type', 'movie')->where('title', $title)->exists();
+                        }
+                    @endphp
+                    <button class="btn btn-ghost btn-lg wishlist-btn" 
+                            data-wishlist-title="{{ $title }}"
+                            onclick="toggleWishlistAjax(event, 'movie', '{{ $title }}', { rating: '{{ $rating }}', genre: '{{ $genre }}', duration: '{{ $duration }}', emoji: '{{ $emoji }}', poster: '{{ $poster }}', image: '{{ $image }}', formats: '{{ $formats }}', languages: '{{ $languages }}' })"
+                            style="display: inline-flex; align-items: center; gap: 8px; border-color: rgba(255,255,255,0.15); height: 50px; padding: 0 24px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; background: transparent; color: var(--white);">
+                        <span class="heart-icon">{{ $isWishlisted ? '❤️' : '🤍' }}</span>
+                        <span>Wishlist</span>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
     <section class="container" id="showtimes" style="padding-top: 80px; padding-bottom: 80px;">
-        <div class="section-header">
-            <div class="section-title">Select <span>Showtimes</span></div>
-            <div class="pill-tabs">
-                <button class="pill-tab active">Fri, 15 May</button>
-                <button class="pill-tab">Sat, 16 May</button>
-                <button class="pill-tab">Sun, 17 May</button>
+        <div class="section-header" style="align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+            <div class="section-title" style="margin-bottom: 0;">Select <span>Showtimes</span></div>
+            @php
+                $today = new \DateTime();
+                $selectedDateStr = request()->query('booking_date', $today->format('Y-m-d'));
+            @endphp
+            <div class="date-scroll-container" style="display: flex; gap: 10px; overflow-x: auto; padding: 4px 0; -webkit-overflow-scrolling: touch; scrollbar-width: none; border-radius: 12px;">
+                @for ($i = 0; $i < 7; $i++)
+                    @php
+                        $current = clone $today;
+                        $current->modify("+$i day");
+                        $dayStr = $current->format('Y-m-d');
+                        $dayOfWeek = strtoupper($current->format('D'));
+                        $dayOfMonth = $current->format('d');
+                        $monthName = strtoupper($current->format('M'));
+                        $isSelected = ($dayStr === $selectedDateStr);
+                    @endphp
+                    @if ($i < 4)
+                        <div class="date-chip {{ $isSelected ? 'active' : '' }}" 
+                             onclick="selectShowDate('{{ $dayStr }}')"
+                             style="flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 14px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); min-width: 68px; text-align: center;
+                                    {{ $isSelected ? 'background: #ef4f5f; color: #ffffff; box-shadow: 0 8px 20px rgba(239, 79, 95, 0.35); border: 1px solid #ef4f5f;' : 'background: rgba(255,255,255,0.03); color: var(--white); border: 1px solid var(--border);' }}">
+                            <span style="font-size: 9px; font-weight: 700; letter-spacing: 0.5px; opacity: 0.8; text-transform: uppercase; color: {{ $isSelected ? '#ffffff' : 'var(--muted)' }};">{{ $dayOfWeek }}</span>
+                            <span style="font-size: 20px; font-weight: 800; margin: 2px 0; display: block; color: #ffffff;">{{ $dayOfMonth }}</span>
+                            <span style="font-size: 9px; font-weight: 700; letter-spacing: 0.5px; opacity: 0.8; text-transform: uppercase; color: {{ $isSelected ? '#ffffff' : 'var(--muted)' }};">{{ $monthName }}</span>
+                        </div>
+                    @else
+                        <div class="date-chip crossed-out" 
+                             style="flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 14px; min-width: 68px; text-align: center; position: relative;
+                                    background: rgba(255,255,255,0.01); border: 1px dashed rgba(255,255,255,0.05); cursor: not-allowed; overflow: hidden; opacity: 0.35;">
+                            <!-- Gorgeous Diagonal Cross Line -->
+                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, transparent 48%, rgba(239, 79, 95, 0.6) 49%, rgba(239, 79, 95, 0.6) 51%, transparent 52%); pointer-events: none;"></div>
+                            
+                            <span style="font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--muted);">{{ $dayOfWeek }}</span>
+                            <span style="font-size: 20px; font-weight: 800; margin: 2px 0; display: block; color: var(--muted); text-decoration: line-through;">{{ $dayOfMonth }}</span>
+                            <span style="font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--muted);">{{ $monthName }}</span>
+                        </div>
+                    @endif
+                @endfor
             </div>
         </div>
 
@@ -109,7 +232,7 @@
             <div class="section-title">Cast & <span>Crew</span></div>
         </div>
         <div class="cast-scroll">
-            @foreach(['Ranveer Singh', 'Kiara Advani', 'Vicky Kaushal', 'Nawazuddin Siddiqui'] as $name)
+            @foreach($currentCastCrew['cast'] as $name)
             <div class="cast-card">
                 <div class="cast-avatar">👤</div>
                 <div class="cast-name">{{ $name }}</div>
@@ -118,14 +241,22 @@
             @endforeach
             <div class="cast-card">
                 <div class="cast-avatar">🎬</div>
-                <div class="cast-name">Ayan Verma</div>
+                <div class="cast-name">{{ $currentCastCrew['director'] }}</div>
                 <div class="cast-role">Director</div>
             </div>
             <div class="cast-card">
                 <div class="cast-avatar">🎵</div>
-                <div class="cast-name">Anirudh R.</div>
+                <div class="cast-name">{{ $currentCastCrew['music'] }}</div>
                 <div class="cast-role">Music</div>
             </div>
         </div>
     </section>
+
+    <script>
+        window.selectShowDate = function(dateStr) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('booking_date', dateStr);
+            window.location.href = url.toString();
+        };
+    </script>
 </x-layouts.app>

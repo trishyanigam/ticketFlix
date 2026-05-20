@@ -20,6 +20,19 @@
      data-premiere="{{ in_array($title, ['Dhurandhar', 'Project', 'Raja']) ? 'true' : 'false' }}"
      style="border: none; background: #18181c; border-radius: 20px; overflow: hidden; cursor: pointer;">
     <div class="movie-poster" style="aspect-ratio: 1/1.4; position: relative;">
+        <!-- Wishlist Button -->
+        <button class="wishlist-btn" 
+                data-wishlist-title="{{ $full_title ?? $title }}"
+                onclick="toggleWishlistAjax(event, 'movie', '{{ $full_title ?? $title }}', { rating: '{{ $rating }}', genre: '{{ $genre }}', duration: '{{ $duration }}', emoji: '{{ $emoji }}', poster: '{{ $poster }}', image: '{{ $image }}', formats: '{{ implode(', ', $formats) }}', languages: '{{ implode(', ', $languages) }}' })"
+                style="position: absolute; top: 12px; left: 12px; z-index: 10; border: none; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; color: var(--muted); transition: all 0.3s ease;">
+            @php
+                $isWishlisted = false;
+                if(auth()->check()) {
+                    $isWishlisted = \App\Models\Wishlist::where('user_id', auth()->id())->where('type', 'movie')->where('title', $full_title ?? $title)->exists();
+                }
+            @endphp
+            <span class="heart-icon">{{ $isWishlisted ? '❤️' : '🤍' }}</span>
+        </button>
         @if($image)
             <img src="{{ asset('assets/images/movies/' . $image) }}" alt="{{ $title }}" style="width: 100%; height: 100%; object-fit: cover;">
         @else

@@ -29,6 +29,8 @@ Route::middleware('auth')->group(function () {
         ->name('profile.dashboard');
     Route::post('/profile/update', [ProfileController::class, 'update'])
         ->name('profile.update');
+    Route::post('/wishlist/toggle', [ProfileController::class, 'toggleWishlist'])
+        ->name('wishlist.toggle');
 
     Route::get('/admin', [DashboardController::class, 'index'])
         ->name('admin.dashboard');
@@ -38,6 +40,9 @@ Route::middleware('auth')->group(function () {
     Route::middleware([\App\Http\Middleware\RestrictAdmin::class])->group(function () {
         Route::get('/seat-selection', [MovieController::class, 'seats'])
             ->name('movies.seats');
+
+        Route::get('/food-selection', [MovieController::class, 'food'])
+            ->name('movies.food');
 
         Route::get('/event-seats', [EventController::class, 'seats'])
             ->name('events.seats');
